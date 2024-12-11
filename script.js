@@ -265,6 +265,13 @@ function calculateResultForCTR(data, ctr, impressions, totalDesignCost, testAdCo
  *
  * @param {object} results - Объект с результатами расчётов.
  */
+// ... (предыдущий код script.js)
+
+/**
+ * Выводит результаты расчётов на страницу.
+ *
+ * @param {object} results - Объект с результатами расчётов.
+ */
 function displayResults(results) {
   const resultsContainer = document.getElementById("results");
   resultsContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых результатов
@@ -297,7 +304,7 @@ function displayResults(results) {
   });
 
   // Добавляем строку для затрат на тесты в результаты
-  // const testCosts = results["Исходные данные"]["Затраты на тесты"]; - আগের কোড
+  const testCosts = results["Исходные данные"]["Затраты на тесты"];
 
   //   const metrics = Object.keys(results["Исходные данные"]);
   const metrics = Object.keys(results["Исходные данные"]).filter(
@@ -316,8 +323,8 @@ function displayResults(results) {
       let value;
 
       if (metric === "Затраты на тесты") {
-        // Исправленная логика:
-        value = results[ctrKey][metric];
+        // Для строки "Затраты на тесты" отображаем общее значение затрат
+        value = testCosts;
       } else {
         value = results[ctrKey][metric];
       }
@@ -333,6 +340,71 @@ function displayResults(results) {
       valueCell.style.textAlign = "center";
     });
   });
+
+    // Добавляем выводы после таблицы
+    const conclusionContainer = document.getElementById("conclusion");
+    conclusionContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых выводов
+
+    const conclusionHeader = document.createElement("h3");
+    conclusionHeader.textContent = "Выводы";
+    conclusionContainer.appendChild(conclusionHeader);
+
+    const conclusionText = document.createElement("p");
+    conclusionText.innerHTML = `Результаты расчётов показывают, что A/B-тестирование может привести к увеличению вашей прибыли. Рассмотрим потенциальный эффект от увеличения CTR:<br>`;
+    conclusionContainer.appendChild(conclusionText);
+
+    headerTitles.slice(1).forEach((ctrKey) => {
+      const ctrValue = parseInt(ctrKey.replace(/[^0-9]/g, "")); // Получаем числовое значение CTR из заголовка
+      const paybackPeriod = results[ctrKey]["Срок окупаемости затрат, дней"];
+      const profitIncrease3Months = results[ctrKey]["Изменение прибыли за 3 месяца, руб."];
+      const profitIncrease3MonthsPercent = (profitIncrease3Months / results["Исходные данные"]["Чистая прибыль за 3 месяца, руб."]) * 100;
+  
+      const conclusionCtrText = document.createElement("p");
+      conclusionCtrText.innerHTML += `<b>При увеличении CTR на ${ctrValue}%:</b> `;
+  
+      if (paybackPeriod === "Не окупится") {
+        conclusionCtrText.innerHTML += `При заданных параметрах A/B-тестирование не окупается. `;
+        if (results[ctrKey]["Изменение прибыли за 3 месяца, руб."] > 0) {
+          conclusionCtrText.innerHTML += `Ваша чистая прибыль за 3 месяца может вырасти на ${profitIncrease3MonthsPercent.toFixed(2)}% (${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб.). `;
+        } else {
+          conclusionCtrText.innerHTML += `Ваша чистая прибыль за 3 месяца может измениться на ${profitIncrease3MonthsPercent.toFixed(2)}% (${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб.). `;
+        }
+        conclusionCtrText.innerHTML += `Рекомендуется скорректировать исходные данные (например, снизить затраты на тесты, оптимизировать рекламный бюджет) или пересмотреть подход к A/B-тестированию.`;
+      } else if (paybackPeriod === 0){
+        conclusionCtrText.innerHTML += `При текущих вводных данных о CTR, A/B-тестирование не окупается, так как у вас ещё нет положительной динамики по прибыли. Рекомендуется провести тесты и получить данные о CTR, на основе которых можно точнее оценить окупаемость.`;
+      } else {
+        conclusionCtrText.innerHTML += `A/B-тестирование при заданных параметрах окупается за ${paybackPeriod} ${getDaysEnding(paybackPeriod)} и потенциально принесёт ${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб. дополнительной прибыли за 3 месяца. `;
+        conclusionCtrText.innerHTML += `Ваша чистая прибыль за 3 месяца может вырасти на ${profitIncrease3MonthsPercent.toFixed(2)}% (${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб.). `;
+      }
+  
+      conclusionContainer.appendChild(conclusionCtrText);
+    });
+
+    // Добавляем примечание
+    const noteText = document.createElement("p");
+    noteText.innerHTML = "Обратите внимание, что расчёты являются приблизительными и могут отличаться от фактических результатов.";
+    conclusionContainer.appendChild(noteText);
+}
+
+/**
+ * Возвращает правильное окончание для слова "день" в зависимости от числа.
+ *
+ * @param {number} number - Число дней.
+ * @returns {string} - Правильное окончание.
+ */
+function getDaysEnding(number) {
+  const lastDigit = number % 10;
+  const lastTwoDigits = number % 100;
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+    return "дней";
+  } else if (lastDigit === 1) {
+    return "день";
+  } else if (lastDigit >= 2 && lastDigit <= 4) {
+    return "дня";
+  } else {
+    return "дней";
+  }
 }
 
 /**
