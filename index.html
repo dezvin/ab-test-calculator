@@ -11,14 +11,17 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
+  <header>
     <div class="container">
-        <header class="header">
-            <img src="img/logo.png" alt="MPSolutions | Brain Lab - Лаборатория прибыльного бизнеса на WB и Ozon" class="logo">
-            <div class="header-text">
-                <div class="header-title">MPSolutions | Brain Lab</div>
-                <div class="header-subtitle">Лаборатория прибыльного бизнеса на WB и Ozon</div>
-            </div>
-        </header>
+        <img src="img/logo.png" alt="MPSolutions | Brain Lab - Лаборатория прибыльного бизнеса на WB и Ozon" class="logo">
+        <div class="header-text">
+            <div class="header-title">MPSolutions | Brain Lab</div>
+            <div class="header-subtitle">Лаборатория прибыльного бизнеса на WB и Ozon</div>
+        </div>
+    </div>
+  </header>
+  <main>
+    <div class="container">
         <h1>Калькулятор окупаемости A/B-тестирования на Wildberries</h1>
         
         <p class="instruction">Этот калькулятор поможет вам оценить, как A/B-тестирование главного изображения карточки товара на Wildberries может увеличить вашу прибыль. Введите данные о вашей текущей рекламной кампании, предполагаемых затратах на тесты и ожидаемом росте CTR. Калькулятор рассчитает потенциальный прирост прибыли и окупаемость инвестиций в A/B-тестирование. Обратите внимание, что расчёты являются приблизительными и могут отличаться от фактических результатов.</p>
@@ -32,69 +35,71 @@
 
         <form id="calculator-form">
             <h2>Исходные данные:</h2>
-            <div class="form-group">
+            <fieldset class="form-group">
                 <label for="daily-budget">Дневной бюджет на рекламу, руб.*:</label>
-                <input type="number" id="daily-budget" name="daily-budget" value="3000" required>
+                <input type="number" id="daily-budget" name="daily-budget" value="3000" placeholder="3000" required>
                 <div class="hint">Сколько вы в день тратите на рекламу</div>
-            </div>
-            <div class="form-group">
+            </fieldset>
+            <fieldset class="form-group">
                 <label for="cpm">CPM (стоимость 1000 показов), руб.*:</label>
-                <input type="number" id="cpm" name="cpm" value="150" required>
+                <input type="number" id="cpm" name="cpm" value="150" placeholder="150" required>
                 <div class="hint">Ваша ставка за 1000 показов</div>
-            </div>
-            <div class="form-group">
+            </fieldset>
+            <fieldset class="form-group">
                 <label for="current-ctr">Текущий CTR, %*:</label>
-                <input type="number" id="current-ctr" name="current-ctr" value="3" required>
+                <input type="number" id="current-ctr" name="current-ctr" value="3" placeholder="3" required>
                 <div class="hint">Ваш текущий CTR</div>
-            </div>
-            <div class="form-group">
+            </fieldset>
+            <fieldset class="form-group">
                 <label for="cart-conversion">Конверсия в корзину, %*:</label>
-                <input type="number" id="cart-conversion" name="cart-conversion" value="10" required>
+                <input type="number" id="cart-conversion" name="cart-conversion" value="10" placeholder="10" required>
                 <div class="hint">Показатель конверсии карточки в корзину из Воронки продаж</div>
-            </div>
-            <div class="form-group">
+            </fieldset>
+            <fieldset class="form-group">
                 <label for="order-conversion">Конверсия в заказ, %*:</label>
-                <input type="number" id="order-conversion" name="order-conversion" value="5" required>
+                <input type="number" id="order-conversion" name="order-conversion" value="5" placeholder="5" required>
                 <div class="hint">Показатель конверсии карточки в заказ из Воронки продаж</div>
-            </div>
-            <div class="form-group">
+            </fieldset>
+            <fieldset class="form-group">
                 <label for="redemption-rate">Процент выкупа, %*:</label>
-                <input type="number" id="redemption-rate" name="redemption-rate" value="90" required>
+                <input type="number" id="redemption-rate" name="redemption-rate" value="90" placeholder="90" required>
                 <div class="hint">Процент выкупа карточки из Воронки продаж</div>
-            </div>
-            <div class="form-group">
+            </fieldset>
+            <fieldset class="form-group">
                 <label for="product-price">Средняя стоимость товара, руб.*:</label>
-                <input type="number" id="product-price" name="product-price" value="1000" required>
+                <input type="number" id="product-price" name="product-price" value="1000" placeholder="1000" required>
                 <div class="hint">Средняя стоимость товара без СПП (скидка WB)</div>
-            </div>
-            <div class="form-group">
+            </fieldset>
+            <fieldset class="form-group">
                 <label for="margin">Маржа с единицы товара, руб.*:</label>
-                <input type="number" id="margin" name="margin" value="300" required>
+                <input type="number" id="margin" name="margin" value="300" placeholder="300" required>
                 <div class="hint">Маржа на 1 ед. товара на основании юнит-экономики без учёта затрат на рекламу</div>
-            </div>
-            <div class="form-group">
+            </fieldset>
+            <fieldset class="form-group">
                 <label for="design-cost-per-slide">Стоимость 1 слайда дизайна, руб.*:</label>
-                <input type="number" id="design-cost-per-slide" name="design-cost-per-slide" value="750" required>
+                <input type="number" id="design-cost-per-slide" name="design-cost-per-slide" value="750" placeholder="750" required>
                 <div class="hint">750₽ - средняя цена за слайд у <b>нормального</b> дизайнера</div>
-            </div>
-            <div class="form-group">
+            </fieldset>
+            <fieldset class="form-group">
                 <label for="num-design-options">Кол-во вариантов дизайна для теста, шт.*:</label>
-                <input type="number" id="num-design-options" name="num-design-options" value="20" required>
+                <input type="number" id="num-design-options" name="num-design-options" value="20" placeholder="20" required>
                 <div class="hint">Обычно A/B тест главного изображения запускают сразу на 20 вариантах, чтобы сэкономить время</div>
-            </div>
-            <div class="form-group">
+            </fieldset>
+            <fieldset class="form-group">
                 <label for="impressions-per-test">Кол-во показов на тест одного варианта, шт.*:</label>
-                <input type="number" id="impressions-per-test" name="impressions-per-test" value="1000" required>
+                <input type="number" id="impressions-per-test" name="impressions-per-test" value="1000" placeholder="1000" required>
                 <div class="hint">Минимальное рекомендуемое количество показов для теста - 1000</div>
-            </div>
-            <button type="submit">Рассчитать</button>
+            </fieldset>
+            <button type="submit" class="calculate-button">Рассчитать</button>
             <div class="note">* - Обязательные для заполнения поля</div>
         </form>
 
-        <div id="results">
-            </div>
+        <div id="results"></div>
+        <div id="conclusion"></div>
     </div>
-
-    <script src="script.js"></script>
+  </main>
+  <footer>
+  </footer>
+    <script src="script.js" type="text/javascript"></script>
 </body>
 </html>
