@@ -135,11 +135,11 @@ th {
 }
 
 .logo {
-    height: 60px; /* Подберите оптимальную высоту логотипа */
+    height: 48px; /* Подберите оптимальную высоту логотипа */
 }
 
 .header-text {
-    text-align: right;
+    text-align: left;
 }
 
 .header-title {
@@ -155,7 +155,7 @@ th {
 
 /* Стили для инструкции */
 .instruction {
-    text-align: center;
+    text-align: left;
     margin-bottom: 20px;
     font-size: 16px;
 }
