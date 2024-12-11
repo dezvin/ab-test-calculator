@@ -397,6 +397,26 @@ function displayResults(results) {
   const whatNextText = document.createElement("p");
   whatNextText.innerHTML = `Вы увидели, как A/B-тестирование может увеличить вашу прибыль на Wildberries. Но это только вершина айсберга! A/B-тесты – это не разовая акция, а постоянный процесс улучшения ваших карточек товаров. Рынок не стоит на месте, конкуренты не дремлют. Регулярное A/B-тестирование – это ваш ключ к тому, чтобы всегда быть на шаг впереди.`;
   whatNextContainer.appendChild(whatNextText);
+
+    // Добавляем блок "Узнать программу мастер-класса"
+  const masterClassContainer = document.createElement("div");
+  masterClassContainer.setAttribute("id", "master-class");
+  conclusionContainer.appendChild(masterClassContainer);
+
+  const masterClassHeader = document.createElement("h3");
+  masterClassHeader.textContent = "Хотите освоить A/B-тестирование?";
+  masterClassContainer.appendChild(masterClassHeader);
+
+  const masterClassText = document.createElement("p");
+  masterClassText.innerHTML = `Присоединяйтесь к чату предзаписи, чтобы узнать программу мастер-класса по A/B-тестированию карточек товаров на Wildberries, где вы сможете познать науку A/B-тестирования!`;
+  masterClassContainer.appendChild(masterClassText);
+
+  const masterClassButton = document.createElement("a");
+  masterClassButton.setAttribute("href", "https://t.me/+czhYbv8i_ZMxNjRi"); // Замените на вашу ссылку
+  masterClassButton.setAttribute("target", "_blank"); // Открывать ссылку в новой вкладке
+  masterClassButton.classList.add("master-class-button");
+  masterClassButton.textContent = "Узнать программу мастер-класса";
+  masterClassContainer.appendChild(masterClassButton);
 }
 
 /**
