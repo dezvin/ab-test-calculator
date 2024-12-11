@@ -308,56 +308,62 @@ function displayResults(results) {
     });
   });
 
-    // Добавляем выводы после таблицы
-    const conclusionContainer = document.getElementById("conclusion");
-    conclusionContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых выводов
+  // Добавляем выводы после таблицы
+  const conclusionContainer = document.getElementById("conclusion");
+  conclusionContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых выводов
 
-    const conclusionHeader = document.createElement("h3");
-    conclusionHeader.textContent = "Выводы";
-    conclusionContainer.appendChild(conclusionHeader);
+  const conclusionHeader = document.createElement("h3");
+  conclusionHeader.textContent = "Выводы";
+  conclusionContainer.appendChild(conclusionHeader);
 
-    const conclusionText = document.createElement("p");
-    conclusionText.innerHTML = `Результаты расчётов показывают, что A/B-тестирование может привести к увеличению вашей прибыли. Рассмотрим потенциальный эффект от увеличения CTR:<br>`;
-    conclusionContainer.appendChild(conclusionText);
+  const conclusionText = document.createElement("p");
+  conclusionText.innerHTML = `Результаты расчётов показывают, что A/B-тестирование может привести к увеличению вашей прибыли. Рассмотрим потенциальный эффект от увеличения CTR:<br>`;
+  conclusionContainer.appendChild(conclusionText);
 
-    headerTitles.slice(1).forEach((ctrKey) => {
-      const ctrValue = parseInt(ctrKey.replace(/[^0-9]/g, "")); // Получаем числовое значение CTR из заголовка
-      
-      // Проверяем, что это не "Исходные данные"
-      if (ctrKey !== "Исходные данные") {
-          const paybackPeriod = results[ctrKey]["Срок окупаемости затрат, дней"];
-          const profitIncrease3Months = results[ctrKey]["Изменение прибыли за 3 месяца, руб."];
+  headerTitles.slice(1).forEach((ctrKey) => {
+    const ctrValue = parseInt(ctrKey.replace(/[^0-9]/g, "")); // Получаем числовое значение CTR из заголовка
 
-          // Добавляем проверку деления на ноль
-          const profitIncrease3MonthsPercent = results["Исходные данные"]["Чистая прибыль за 3 месяца, руб."] !== 0
-            ? (profitIncrease3Months / results["Исходные данные"]["Чистая прибыль за 3 месяца, руб."]) * 100
-            : 0;
+    // Проверяем, что это не "Исходные данные"
+    if (ctrKey !== "Исходные данные") {
+      const paybackPeriod = results[ctrKey]["Срок окупаемости затрат, дней"];
+      const profitIncrease3Months = results[ctrKey][
+        "Изменение прибыли за 3 месяца, руб."
+      ];
 
-          const conclusionCtrText = document.createElement("p");
-          conclusionCtrText.innerHTML += `<b>При увеличении CTR на ${ctrValue}%:</b> `;
+      // Добавляем проверку деления на ноль
+      const profitIncrease3MonthsPercent =
+        results["Исходные данные"]["Чистая прибыль за 3 месяца, руб."] !== 0
+          ? (profitIncrease3Months /
+              results["Исходные данные"]["Чистая прибыль за 3 месяца, руб."]) *
+            100
+          : 0;
 
-          if (paybackPeriod === "Не окупится") {
-            conclusionCtrText.innerHTML += `При заданных параметрах A/B-тестирование не окупается. `;
-            // Проверяем, что изменение прибыли не равно нулю
-            if (profitIncrease3Months !== 0) {
-                conclusionCtrText.innerHTML += `Ваша чистая прибыль за 3 месяца может измениться на ${profitIncrease3MonthsPercent.toFixed(2)}% (${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб.). `;
-            }
-            conclusionCtrText.innerHTML += `Рекомендуется скорректировать исходные данные (например, снизить затраты на тесты, оптимизировать рекламный бюджет) или пересмотреть подход к A/B-тестированию.`;
-          } else if (paybackPeriod === 0){
-            conclusionCtrText.innerHTML += `При текущих вводных данных о CTR, A/B-тестирование не окупается, так как у вас ещё нет положительной динамики по прибыли. Рекомендуется провести тесты и получить данные о CTR, на основе которых можно точнее оценить окупаемость.`;
-          } else {
-            conclusionCtrText.innerHTML += `A/B-тестирование при заданных параметрах окупается за ${paybackPeriod} ${getDaysEnding(paybackPeriod)} и потенциально принесёт ${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб. дополнительной прибыли за 3 месяца. `;
-            conclusionCtrText.innerHTML += `Ваша чистая прибыль за 3 месяца может вырасти на ${profitIncrease3MonthsPercent.toFixed(2)}% (${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб.). `;
-          }
+      const conclusionCtrText = document.createElement("p");
+      conclusionCtrText.innerHTML += `<b>При увеличении CTR на ${ctrValue}%:</b> `;
 
-          conclusionContainer.appendChild(conclusionCtrText);
+      if (paybackPeriod === "Не окупится") {
+        conclusionCtrText.innerHTML += `При заданных параметрах A/B-тестирование не окупается. `;
+        // Проверяем, что изменение прибыли не равно нулю
+        if (profitIncrease3Months !== 0) {
+          conclusionCtrText.innerHTML += `Ваша чистая прибыль за 3 месяца может измениться на ${profitIncrease3MonthsPercent.toFixed(2)}% (${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб.). `;
+        }
+        conclusionCtrText.innerHTML +=
+          "Рекомендуется скорректировать исходные данные (например, снизить затраты на тесты, оптимизировать рекламный бюджет) или пересмотреть подход к A/B-тестированию.";
+      } else if (paybackPeriod === 0) {
+        conclusionCtrText.innerHTML += `При текущих вводных данных о CTR, A/B-тестирование не окупается, так как у вас ещё нет положительной динамики по прибыли. Рекомендуется провести тесты и получить данные о CTR, на основе которых можно точнее оценить окупаемость.`;
+      } else {
+        conclusionCtrText.innerHTML += `A/B-тестирование при заданных параметрах окупается за ${paybackPeriod.toFixed(1)} ${getDaysEnding(paybackPeriod)} и потенциально принесёт ${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб. дополнительной прибыли за 3 месяца. `;
       }
-    });
 
-    // Добавляем примечание
-    const noteText = document.createElement("p");
-    noteText.innerHTML = "Обратите внимание, что расчёты являются приблизительными и могут отличаться от фактических результатов.";
-    conclusionContainer.appendChild(noteText);
+      conclusionContainer.appendChild(conclusionCtrText);
+    }
+  });
+
+  // Добавляем примечание
+  const noteText = document.createElement("p");
+  noteText.innerHTML =
+    "Обратите внимание, что расчёты являются приблизительными и могут отличаться от фактических результатов.";
+  conclusionContainer.appendChild(noteText);
 }
 
 /**
