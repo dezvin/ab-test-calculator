@@ -119,10 +119,34 @@ function calculateResults(data) {
   const testAdCost = data.numDesignOptions * (1000 / data.cpm) * data.designCostPerSlide;
 
   const results = {
-    "Исходные данные": calculateResultForCTR(data, data.currentCtr, impressions, 0, 0),
-    "CTR +1%": calculateResultForCTR(data, data.currentCtr + 1, impressions, totalDesignCost, testAdCost),
-    "CTR +2%": calculateResultForCTR(data, data.currentCtr + 2, impressions, totalDesignCost, testAdCost),
-    "CTR +3%": calculateResultForCTR(data, data.currentCtr + 3, impressions, totalDesignCost, testAdCost),
+    "Исходные данные": calculateResultForCTR(
+      data,
+      data.currentCtr,
+      impressions,
+      0,
+      0
+    ),
+    "CTR +1%": calculateResultForCTR(
+      data,
+      data.currentCtr + 1,
+      impressions,
+      totalDesignCost,
+      testAdCost
+    ),
+    "CTR +2%": calculateResultForCTR(
+      data,
+      data.currentCtr + 2,
+      impressions,
+      totalDesignCost,
+      testAdCost
+    ),
+    "CTR +3%": calculateResultForCTR(
+      data,
+      data.currentCtr + 3,
+      impressions,
+      totalDesignCost,
+      testAdCost
+    ),
   };
 
   return results;
@@ -138,65 +162,101 @@ function calculateResults(data) {
  * @param {number} testAdCost - Затраты на рекламу для теста.
  * @returns {object} - Объект с результатами расчётов для заданного CTR.
  */
-function calculateResultForCTR(data, ctr, impressions, totalDesignCost, testAdCost) {
-    const clicks = calculateClicks(impressions, ctr);
-    const addToCart = calculateAddToCart(clicks, data.cartConversion);
-    const orders = calculateOrders(addToCart, data.orderConversion);
-    const redemptions = calculateRedemptions(orders, data.redemptionRate);
-    const revenue = calculateRevenue(redemptions, data.productPrice);
-    const adCost = data.dailyBudget;
-    const profit = calculateProfit(redemptions, data.margin, adCost);
-    const weeklyProfit = profit * 7;
-    const monthlyProfit = profit * 30;
-    const quarterlyProfit = profit * 90;
-  
-    let profitDiffDay = 0;
-    let profitDiffWeek = 0;
-    let profitDiffMonth = 0;
-    let profitDiffQuarter = 0;
-  
-    // Расчет изменения прибыли только для случаев с увеличенным CTR
-    if (ctr > data.currentCtr) {
-      const initialImpressions = calculateImpressions(data.dailyBudget, data.cpm);
-      const initialClicks = calculateClicks(initialImpressions, data.currentCtr);
-      const initialAddToCart = calculateAddToCart(initialClicks, data.cartConversion);
-      const initialOrders = calculateOrders(initialAddToCart, data.orderConversion);
-      const initialRedemptions = calculateRedemptions(initialOrders, data.redemptionRate);
-      const initialProfit = calculateProfit(initialRedemptions, data.margin, data.dailyBudget);
-      
-      profitDiffDay = profit - initialProfit;
-      profitDiffWeek = profitDiffDay * 7;
-      profitDiffMonth = profitDiffDay * 30;
-      profitDiffQuarter = profitDiffDay * 90;
-    }
-  
-    const paybackPeriod = profitDiffDay > 0 ? (totalDesignCost + testAdCost) / profitDiffDay : "Не окупится";
-    const roiWeek = profitDiffWeek > 0 ? ((profitDiffWeek - (totalDesignCost + testAdCost)) / (totalDesignCost + testAdCost)) * 100 : 0;
-    const roiMonth = profitDiffMonth > 0 ? ((profitDiffMonth - (totalDesignCost + testAdCost)) / (totalDesignCost + testAdCost)) * 100 : 0;
-    const roiQuarter = profitDiffQuarter > 0 ? ((profitDiffQuarter - (totalDesignCost + testAdCost)) / (totalDesignCost + testAdCost)) * 100 : 0;
-  
-    return {
-      "Показов в день": impressions,
-      "Кликов в день": clicks,
-      "Добавлений в корзину в день": addToCart,
-      "Заказов в день": orders,
-      "Выкупов в день": redemptions,
-      "Выручка в день, руб.": revenue,
-      "Расходы на рекламу в день, руб.": adCost,
-      "Чистая прибыль в день, руб.": profit,
-      "Чистая прибыль в неделю, руб.": weeklyProfit,
-      "Чистая прибыль в месяц, руб.": monthlyProfit,
-      "Чистая прибыль за 3 месяца, руб.": quarterlyProfit,
-      "Изменение прибыли в день, руб.": profitDiffDay,
-      "Изменение прибыли в неделю, руб.": profitDiffWeek,
-      "Изменение прибыли в месяц, руб.": profitDiffMonth,
-      "Изменение прибыли за 3 месяца, руб.": profitDiffQuarter,
-      "Срок окупаемости затрат, дней": paybackPeriod,
-      "ROI за неделю, %": roiWeek,
-      "ROI за месяц, %": roiMonth,
-      "ROI за 3 месяца, %": roiQuarter,
-    };
+function calculateResultForCTR(
+  data,
+  ctr,
+  impressions,
+  totalDesignCost,
+  testAdCost
+) {
+  const clicks = calculateClicks(impressions, ctr);
+  const addToCart = calculateAddToCart(clicks, data.cartConversion);
+  const orders = calculateOrders(addToCart, data.orderConversion);
+  const redemptions = calculateRedemptions(orders, data.redemptionRate);
+  const revenue = calculateRevenue(redemptions, data.productPrice);
+  const adCost = data.dailyBudget;
+  const profit = calculateProfit(redemptions, data.margin, adCost);
+  const weeklyProfit = profit * 7;
+  const monthlyProfit = profit * 30;
+  const quarterlyProfit = profit * 90;
+  const testCosts = totalDesignCost + testAdCost;
+
+  let profitDiffDay = 0;
+  let profitDiffWeek = 0;
+  let profitDiffMonth = 0;
+  let profitDiffQuarter = 0;
+
+  // Расчет изменения прибыли только для случаев с увеличенным CTR
+  if (ctr > data.currentCtr) {
+    const initialImpressions = calculateImpressions(data.dailyBudget, data.cpm);
+    const initialClicks = calculateClicks(initialImpressions, data.currentCtr);
+    const initialAddToCart = calculateAddToCart(
+      initialClicks,
+      data.cartConversion
+    );
+    const initialOrders = calculateOrders(initialAddToCart, data.orderConversion);
+    const initialRedemptions = calculateRedemptions(
+      initialOrders,
+      data.redemptionRate
+    );
+    const initialProfit = calculateProfit(
+      initialRedemptions,
+      data.margin,
+      data.dailyBudget
+    );
+
+    profitDiffDay = profit - initialProfit;
+    profitDiffWeek = profitDiffDay * 7;
+    profitDiffMonth = profitDiffDay * 30;
+    profitDiffQuarter = profitDiffDay * 90;
   }
+
+  const paybackPeriod =
+    profitDiffDay > 0
+      ? (totalDesignCost + testAdCost) / profitDiffDay
+      : "Не окупится";
+  const roiWeek =
+    profitDiffWeek > 0
+      ? ((profitDiffWeek - (totalDesignCost + testAdCost)) /
+          (totalDesignCost + testAdCost)) *
+        100
+      : 0;
+  const roiMonth =
+    profitDiffMonth > 0
+      ? ((profitDiffMonth - (totalDesignCost + testAdCost)) /
+          (totalDesignCost + testAdCost)) *
+        100
+      : 0;
+  const roiQuarter =
+    profitDiffQuarter > 0
+      ? ((profitDiffQuarter - (totalDesignCost + testAdCost)) /
+          (totalDesignCost + testAdCost)) *
+        100
+      : 0;
+
+  return {
+    "Показов в день": impressions,
+    "Кликов в день": clicks,
+    "Добавлений в корзину в день": addToCart,
+    "Заказов в день": orders,
+    "Выкупов в день": redemptions,
+    "Выручка в день, руб.": revenue,
+    "Расходы на рекламу в день, руб.": adCost,
+    "Затраты на тесты": testCosts,
+    "Чистая прибыль в день, руб.": profit,
+    "Чистая прибыль в неделю, руб.": weeklyProfit,
+    "Чистая прибыль в месяц, руб.": monthlyProfit,
+    "Чистая прибыль за 3 месяца, руб.": quarterlyProfit,
+    "Изменение прибыли в день, руб.": profitDiffDay,
+    "Изменение прибыли в неделю, руб.": profitDiffWeek,
+    "Изменение прибыли в месяц, руб.": profitDiffMonth,
+    "Изменение прибыли за 3 месяца, руб.": profitDiffQuarter,
+    "Срок окупаемости затрат, дней": paybackPeriod,
+    "ROI за неделю, %": roiWeek,
+    "ROI за месяц, %": roiMonth,
+    "ROI за 3 месяца, %": roiQuarter,
+  };
+}
 
 /**
  * Выводит результаты расчётов на страницу.
@@ -204,54 +264,74 @@ function calculateResultForCTR(data, ctr, impressions, totalDesignCost, testAdCo
  * @param {object} results - Объект с результатами расчётов.
  */
 function displayResults(results) {
-    const resultsContainer = document.getElementById("results");
-    resultsContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых результатов
-  
-    // Создаем заголовок таблицы
-    const tableHeader = document.createElement("h3");
-    tableHeader.textContent = "Результаты расчетов";
-    resultsContainer.appendChild(tableHeader);
-  
-    // Создаем таблицу
-    const table = document.createElement("table");
-    resultsContainer.appendChild(table);
-  
-   // Создаем строку заголовков таблицы
-   const headerRow = table.insertRow();
-   const headerTitles = ["Показатель", "Исходные данные", "CTR +1%", "CTR +2%", "CTR +3%"];
-   headerTitles.forEach(title => {
-       const headerCell = headerRow.insertCell();
-       headerCell.textContent = title;
-       headerCell.style.fontWeight = "bold"; // Делаем заголовки жирными
- 
-       // Добавляем стили для центрирования текста в заголовках
-       headerCell.style.textAlign = "center";
-   });
-  
-    // Заполняем таблицу данными
-    const metrics = Object.keys(results["Исходные данные"]);
-    metrics.forEach(metric => {
-      const row = table.insertRow();
-      const metricCell = row.insertCell();
-      metricCell.textContent = metric;
-  
-      // Добавляем данные для каждого CTR, начиная с "Исходные данные"
-      headerTitles.slice(1).forEach(ctrKey => {
-          const valueCell = row.insertCell();
-          let value = results[ctrKey][metric];
+  const resultsContainer = document.getElementById("results");
+  resultsContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых результатов
 
-          // Форматируем числовые значения
-          if (typeof value === 'number') {
-              value = value.toLocaleString('ru-RU', { maximumFractionDigits: 2 });
-          }
+  // Создаем заголовок таблицы
+  const tableHeader = document.createElement("h3");
+  tableHeader.textContent = "Результаты расчетов";
+  resultsContainer.appendChild(tableHeader);
 
-          valueCell.textContent = value;
+  // Создаем таблицу
+  const table = document.createElement("table");
+  resultsContainer.appendChild(table);
 
-          // Добавляем стили для центрирования текста в ячейках данных
-          valueCell.style.textAlign = "center";
-      });
+  // Создаем строку заголовков таблицы
+  const headerRow = table.insertRow();
+  const headerTitles = [
+    "Показатель",
+    "Исходные данные",
+    "CTR +1%",
+    "CTR +2%",
+    "CTR +3%",
+  ];
+  headerTitles.forEach((title) => {
+    const headerCell = headerRow.insertCell();
+    headerCell.textContent = title;
+    headerCell.style.fontWeight = "bold"; // Делаем заголовки жирными
+
+    // Добавляем стили для центрирования текста в заголовках
+    headerCell.style.textAlign = "center";
+  });
+
+// Добавляем строку для затрат на тесты в результаты
+  const testCosts = results["Исходные данные"]["Затраты на тесты"];
+
+//   const metrics = Object.keys(results["Исходные данные"]);
+  const metrics = Object.keys(results["Исходные данные"]).filter(
+    (key) => key !== "Затраты на тесты"
+  );
+  metrics.splice(7, 0, "Затраты на тесты"); // Вставляем строку "Затраты на тесты" после "Расходы на рекламу в день, руб."
+
+  metrics.forEach((metric) => {
+    const row = table.insertRow();
+    const metricCell = row.insertCell();
+    metricCell.textContent = metric;
+
+    // Добавляем данные для каждого CTR, начиная с "Исходные данные"
+    headerTitles.slice(1).forEach((ctrKey) => {
+      const valueCell = row.insertCell();
+      let value;
+
+      if (metric === "Затраты на тесты") {
+        // Для строки "Затраты на тесты" отображаем общее значение затрат
+        value = testCosts;
+      } else {
+        value = results[ctrKey][metric];
+      }
+
+      // Форматируем числовые значения
+      if (typeof value === "number") {
+        value = value.toLocaleString("ru-RU", { maximumFractionDigits: 2 });
+      }
+
+      valueCell.textContent = value;
+
+      // Добавляем стили для центрирования текста в ячейках данных
+      valueCell.style.textAlign = "center";
     });
-  }
+  });
+}
 
 /**
  * Обработчик события отправки формы.
