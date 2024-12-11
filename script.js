@@ -1,18 +1,5 @@
 /**
  * Калькулятор окупаемости A/B-тестирования для Wildberries.
- *
- * Функции:
- * - getInputValue(id) - Получает значение из поля ввода по его id.
- * - calculateImpressions(dailyBudget, cpm) - Рассчитывает количество показов в день.
- * - calculateClicks(impressions, ctr) - Рассчитывает количество кликов в день.
- * - calculateAddToCart(clicks, cartConversion) - Рассчитывает количество добавлений в корзину в день.
- * - calculateOrders(addToCart, orderConversion) - Рассчитывает количество заказов в день.
- * - calculateRedemptions(orders, redemptionRate) - Рассчитывает количество выкупов в день.
- * - calculateRevenue(redemptions, productPrice) - Рассчитывает выручку в день.
- * - calculateProfit(redemptions, margin, adCost) - Рассчитывает чистую прибыль в день.
- * - calculateResults(data) - Выполняет расчёты для разных CTR и возвращает объект с результатами.
- * - displayResults(results) - Выводит результаты расчётов на страницу.
- * - handleSubmit(event) - Обработчик события отправки формы.
  */
 
 /**
@@ -20,6 +7,7 @@
  *
  * @param {string} id - Идентификатор поля ввода.
  * @returns {number} - Значение поля ввода (число).
+ * @throws {Error} - Если значение в поле не является числом или отрицательное.
  */
 function getInputValue(id) {
   const value = parseFloat(document.getElementById(id).value);
@@ -103,54 +91,8 @@ function calculateRevenue(redemptions, productPrice) {
  * @param {number} adCost - Расходы на рекламу в день.
  * @returns {number} - Чистая прибыль в день.
  */
-function calculateProfit(redemptions, margin, adCost) {
-  return (redemptions * margin) - adCost;
-}
-
-/**
- * Выполняет расчёты для разных CTR и возвращает объект с результатами.
- *
- * @param {object} data - Объект с исходными данными.
- * @returns {object} - Объект с результатами расчётов.
- */
-function calculateResults(data) {
-  const impressions = calculateImpressions(data.dailyBudget, data.cpm);
-  const totalDesignCost = data.designCostPerSlide * data.numDesignOptions;
-  const testAdCost = data.numDesignOptions * data.impressionsPerTest * (data.cpm / 1000);
-
-  const results = {
-    "Исходные данные": calculateResultForCTR(
-      data,
-      data.currentCtr,
-      impressions,
-      totalDesignCost,
-      testAdCost,
-      true // Флаг, указывающий, что это расчет для исходных данных
-    ),
-    "CTR +1%": calculateResultForCTR(
-      data,
-      data.currentCtr + 1,
-      impressions,
-      totalDesignCost,
-      testAdCost
-    ),
-    "CTR +2%": calculateResultForCTR(
-      data,
-      data.currentCtr + 2,
-      impressions,
-      totalDesignCost,
-      testAdCost
-    ),
-    "CTR +3%": calculateResultForCTR(
-      data,
-      data.currentCtr + 3,
-      impressions,
-      totalDesignCost,
-      testAdCost
-    ),
-  };
-
-  return results;
+function calculateNetProfit(redemptions, margin, adCost) {
+  return redemptions * margin - adCost;
 }
 
 /**
@@ -159,24 +101,27 @@ function calculateResults(data) {
  * @param {object} data - Объект с исходными данными.
  * @param {number} ctr - Значение CTR.
  * @param {number} impressions - Количество показов.
- * @param {number} totalDesignCost - Общие затраты на дизайн.
- * @param {number} testAdCost - Затраты на рекламу для теста.
+ * @param {number} testCosts - Общие затраты на тесты.
  * @param {boolean} isInitial - Флаг, указывающий, является ли расчет исходным.
  * @returns {object} - Объект с результатами расчётов для заданного CTR.
  */
-function calculateResultForCTR(data, ctr, impressions, totalDesignCost, testAdCost, isInitial = false) {
+function calculateResultForCTR(
+  data,
+  ctr,
+  impressions,
+  testCosts,
+  isInitial = false
+) {
   const clicks = calculateClicks(impressions, ctr);
   const addToCart = calculateAddToCart(clicks, data.cartConversion);
   const orders = calculateOrders(addToCart, data.orderConversion);
   const redemptions = calculateRedemptions(orders, data.redemptionRate);
   const revenue = calculateRevenue(redemptions, data.productPrice);
   const adCost = data.dailyBudget;
-  const profit = calculateProfit(redemptions, data.margin, adCost);
+  const profit = calculateNetProfit(redemptions, data.margin, adCost);
   const weeklyProfit = profit * 7;
   const monthlyProfit = profit * 30;
   const quarterlyProfit = profit * 90;
-  // Исправленная строка:
-  const testCosts = isInitial ? 0 : totalDesignCost + testAdCost;
 
   let profitDiffDay = 0;
   let profitDiffWeek = 0;
@@ -186,17 +131,23 @@ function calculateResultForCTR(data, ctr, impressions, totalDesignCost, testAdCo
   // Расчет изменения прибыли только для случаев с увеличенным CTR
   if (!isInitial) {
     const initialImpressions = calculateImpressions(data.dailyBudget, data.cpm);
-    const initialClicks = calculateClicks(initialImpressions, data.currentCtr);
+    const initialClicks = calculateClicks(
+      initialImpressions,
+      data.currentCtr
+    );
     const initialAddToCart = calculateAddToCart(
       initialClicks,
       data.cartConversion
     );
-    const initialOrders = calculateOrders(initialAddToCart, data.orderConversion);
+    const initialOrders = calculateOrders(
+      initialAddToCart,
+      data.orderConversion
+    );
     const initialRedemptions = calculateRedemptions(
       initialOrders,
       data.redemptionRate
     );
-    const initialProfit = calculateProfit(
+    const initialProfit = calculateNetProfit(
       initialRedemptions,
       data.margin,
       data.dailyBudget
@@ -210,25 +161,19 @@ function calculateResultForCTR(data, ctr, impressions, totalDesignCost, testAdCo
 
   const paybackPeriod =
     profitDiffDay > 0
-      ? (totalDesignCost + testAdCost) / profitDiffDay
+      ? testCosts / profitDiffDay
       : "Не окупится";
   const roiWeek =
     profitDiffWeek > 0
-      ? ((profitDiffWeek - (totalDesignCost + testAdCost)) /
-          (totalDesignCost + testAdCost)) *
-        100
+      ? ((profitDiffWeek - testCosts) / testCosts) * 100
       : 0;
   const roiMonth =
     profitDiffMonth > 0
-      ? ((profitDiffMonth - (totalDesignCost + testAdCost)) /
-          (totalDesignCost + testAdCost)) *
-        100
+      ? ((profitDiffMonth - testCosts) / testCosts) * 100
       : 0;
   const roiQuarter =
     profitDiffQuarter > 0
-      ? ((profitDiffQuarter - (totalDesignCost + testAdCost)) /
-          (totalDesignCost + testAdCost)) *
-        100
+      ? ((profitDiffQuarter - testCosts) / testCosts) * 100
       : 0;
 
   return {
@@ -239,7 +184,7 @@ function calculateResultForCTR(data, ctr, impressions, totalDesignCost, testAdCo
     "Выкупов в день": redemptions,
     "Выручка в день, руб.": revenue,
     "Расходы на рекламу в день, руб.": adCost,
-    "Затраты на тесты": testCosts,
+    "Затраты на тесты": isInitial ? 0 : testCosts,
     "Чистая прибыль в день, руб.": profit,
     "Чистая прибыль в неделю, руб.": weeklyProfit,
     "Чистая прибыль в месяц, руб.": monthlyProfit,
@@ -256,16 +201,38 @@ function calculateResultForCTR(data, ctr, impressions, totalDesignCost, testAdCo
 }
 
 /**
- * Выводит результаты расчётов на страницу.
+ * Выполняет расчёты для разных CTR и возвращает объект с результатами.
  *
- * @param {object} results - Объект с результатами расчётов.
+ * @param {object} data - Объект с исходными данными.
+ * @returns {object} - Объект с результатами расчётов.
  */
-/**
- * Выводит результаты расчётов на страницу.
- *
- * @param {object} results - Объект с результатами расчётов.
- */
-// ... (предыдущий код script.js)
+function calculateResults(data) {
+  const impressions = calculateImpressions(data.dailyBudget, data.cpm);
+  const totalDesignCost = data.designCostPerSlide * data.numDesignOptions;
+  const testAdCost = data.numDesignOptions * data.impressionsPerTest * (data.cpm / 1000);
+  const testCosts = totalDesignCost + testAdCost;
+
+  const ctrValues = [
+    data.currentCtr,
+    data.currentCtr + 1,
+    data.currentCtr + 2,
+    data.currentCtr + 3,
+  ];
+
+  const results = {};
+  ctrValues.forEach((ctr, index) => {
+    const resultKey = index === 0 ? "Исходные данные" : `CTR +${ctr - data.currentCtr}%`;
+    results[resultKey] = calculateResultForCTR(
+      data,
+      ctr,
+      impressions,
+      testCosts,
+      index === 0
+    );
+  });
+
+  return results;
+}
 
 /**
  * Выводит результаты расчётов на страницу.
