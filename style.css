@@ -123,3 +123,56 @@ th {
         font-size: 14px;
     }
 }
+
+/* Стили для шапки */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+.logo {
+    height: 60px; /* Подберите оптимальную высоту логотипа */
+}
+
+.header-text {
+    text-align: right;
+}
+
+.header-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.header-subtitle {
+    font-size: 16px;
+    color: #666;
+}
+
+/* Стили для инструкции */
+.instruction {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+/* Стили для блока выводов */
+#conclusion {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#conclusion p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+#conclusion strong {
+    font-weight: bold;
+}
