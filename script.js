@@ -260,6 +260,11 @@ function calculateResultForCTR(data, ctr, impressions, totalDesignCost, testAdCo
  *
  * @param {object} results - Объект с результатами расчётов.
  */
+/**
+ * Выводит результаты расчётов на страницу.
+ *
+ * @param {object} results - Объект с результатами расчётов.
+ */
 function displayResults(results) {
   const resultsContainer = document.getElementById("results");
   resultsContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых результатов
@@ -292,7 +297,7 @@ function displayResults(results) {
   });
 
   // Добавляем строку для затрат на тесты в результаты
-  const testCosts = results["Исходные данные"]["Затраты на тесты"];
+  // const testCosts = results["Исходные данные"]["Затраты на тесты"]; - আগের কোড
 
   //   const metrics = Object.keys(results["Исходные данные"]);
   const metrics = Object.keys(results["Исходные данные"]).filter(
@@ -311,8 +316,8 @@ function displayResults(results) {
       let value;
 
       if (metric === "Затраты на тесты") {
-        // Для строки "Затраты на тесты" отображаем общее значение затрат
-        value = testCosts;
+        // Исправленная логика:
+        value = results[ctrKey][metric];
       } else {
         value = results[ctrKey][metric];
       }
