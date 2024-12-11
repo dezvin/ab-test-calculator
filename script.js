@@ -308,62 +308,66 @@ function displayResults(results) {
     });
   });
 
-  // Добавляем выводы после таблицы
-  const conclusionContainer = document.getElementById("conclusion");
-  conclusionContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых выводов
+    // Добавляем выводы после таблицы
+    const conclusionContainer = document.getElementById("conclusion");
+    conclusionContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых выводов
+  
+    const conclusionHeader = document.createElement("h3");
+    conclusionHeader.textContent = "Что дальше?";
+    conclusionContainer.appendChild(conclusionHeader);
+  
+    const conclusionText = document.createElement("p");
+    conclusionText.innerHTML = `Вы увидели, как A/B-тестирование может увеличить вашу прибыль на Wildberries. Но это только вершина айсберга! A/B-тесты – это не разовая акция, а постоянный процесс улучшения ваших карточек товаров. Рынок не стоит на месте, конкуренты не дремлют. Регулярное A/B-тестирование – это ваш ключ к тому, чтобы всегда быть на шаг впереди.`;
+    conclusionContainer.appendChild(conclusionText);
+  
+    const testCostsTotal = results["Исходные данные"]["Затраты на тесты"];
+    const designCosts = data.designCostPerSlide * data.numDesignOptions;
+    const trafficCosts = testCostsTotal - designCosts;
 
-  const conclusionHeader = document.createElement("h3");
-  conclusionHeader.textContent = "Выводы";
-  conclusionContainer.appendChild(conclusionHeader);
-
-  const conclusionText = document.createElement("p");
-  conclusionText.innerHTML = `Результаты расчётов показывают, что A/B-тестирование может привести к увеличению вашей прибыли. Рассмотрим потенциальный эффект от увеличения CTR:<br>`;
-  conclusionContainer.appendChild(conclusionText);
-
-  headerTitles.slice(1).forEach((ctrKey) => {
-    const ctrValue = parseInt(ctrKey.replace(/[^0-9]/g, "")); // Получаем числовое значение CTR из заголовка
-
-    // Проверяем, что это не "Исходные данные"
-    if (ctrKey !== "Исходные данные") {
-      const paybackPeriod = results[ctrKey]["Срок окупаемости затрат, дней"];
-      const profitIncrease3Months = results[ctrKey][
-        "Изменение прибыли за 3 месяца, руб."
-      ];
-
-      // Добавляем проверку деления на ноль
-      const profitIncrease3MonthsPercent =
-        results["Исходные данные"]["Чистая прибыль за 3 месяца, руб."] !== 0
-          ? (profitIncrease3Months /
-              results["Исходные данные"]["Чистая прибыль за 3 месяца, руб."]) *
-            100
-          : 0;
-
-      const conclusionCtrText = document.createElement("p");
-      conclusionCtrText.innerHTML += `<b>При увеличении CTR на ${ctrValue}%:</b> `;
-
-      if (paybackPeriod === "Не окупится") {
-        conclusionCtrText.innerHTML += `При заданных параметрах A/B-тестирование не окупается. `;
-        // Проверяем, что изменение прибыли не равно нулю
-        if (profitIncrease3Months !== 0) {
-          conclusionCtrText.innerHTML += `Ваша чистая прибыль за 3 месяца может измениться на ${profitIncrease3MonthsPercent.toFixed(2)}% (${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб.). `;
+    headerTitles.slice(1).forEach((ctrKey) => {
+      const ctrValue = parseInt(ctrKey.replace(/[^0-9]/g, "")); // Получаем числовое значение CTR из заголовка
+  
+      // Проверяем, что это не "Исходные данные"
+      if (ctrKey !== "Исходные данные") {
+        const paybackPeriod = results[ctrKey]["Срок окупаемости затрат, дней"];
+        const profitIncrease3Months = results[ctrKey][
+          "Изменение прибыли за 3 месяца, руб."
+        ];
+  
+        // Добавляем проверку деления на ноль
+        const profitIncrease3MonthsPercent =
+          results["Исходные данные"]["Чистая прибыль за 3 месяца, руб."] !== 0
+            ? (profitIncrease3Months /
+                results["Исходные данные"]["Чистая прибыль за 3 месяца, руб."]) *
+              100
+            : 0;
+  
+        const conclusionCtrText = document.createElement("p");
+        conclusionCtrText.innerHTML += `<b>При увеличении CTR на ${ctrValue}%:</b> `;
+  
+        if (paybackPeriod === "Не окупится") {
+          conclusionCtrText.innerHTML += `При заданных параметрах A/B-тестирование не окупается (затраты на дизайн - ${designCosts.toLocaleString("ru-RU")} руб., затраты на трафик - ${trafficCosts.toLocaleString("ru-RU")} руб.).`;
+          // Проверяем, что изменение прибыли не равно нулю
+          if (profitIncrease3Months !== 0) {
+            conclusionCtrText.innerHTML += `Ваша чистая прибыль за 3 месяца может измениться на ${profitIncrease3MonthsPercent.toFixed(2)}% (${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб.). `;
+          }
+          conclusionCtrText.innerHTML +=
+            "Рекомендуется скорректировать исходные данные (например, снизить затраты на тесты, оптимизировать рекламный бюджет) или пересмотреть подход к A/B-тестированию.";
+        } else if (paybackPeriod === 0) {
+          conclusionCtrText.innerHTML += `При текущих вводных данных о CTR, A/B-тестирование не окупается, так как у вас ещё нет положительной динамики по прибыли. Рекомендуется провести тесты и получить данные о CTR, на основе которых можно точнее оценить окупаемость.`;
+        } else {
+          conclusionCtrText.innerHTML += `A/B-тестирование при заданных параметрах окупается за ${paybackPeriod.toFixed(1)} ${getDaysEnding(paybackPeriod)} (затраты на дизайн - ${designCosts.toLocaleString("ru-RU")} руб., затраты на трафик - ${trafficCosts.toLocaleString("ru-RU")} руб.) и потенциально принесёт ${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб. дополнительной прибыли за 3 месяца.`;
         }
-        conclusionCtrText.innerHTML +=
-          "Рекомендуется скорректировать исходные данные (например, снизить затраты на тесты, оптимизировать рекламный бюджет) или пересмотреть подход к A/B-тестированию.";
-      } else if (paybackPeriod === 0) {
-        conclusionCtrText.innerHTML += `При текущих вводных данных о CTR, A/B-тестирование не окупается, так как у вас ещё нет положительной динамики по прибыли. Рекомендуется провести тесты и получить данные о CTR, на основе которых можно точнее оценить окупаемость.`;
-      } else {
-        conclusionCtrText.innerHTML += `A/B-тестирование при заданных параметрах окупается за ${paybackPeriod.toFixed(1)} ${getDaysEnding(paybackPeriod)} и потенциально принесёт ${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб. дополнительной прибыли за 3 месяца. `;
+  
+        conclusionContainer.appendChild(conclusionCtrText);
       }
-
-      conclusionContainer.appendChild(conclusionCtrText);
-    }
-  });
-
-  // Добавляем примечание
-  const noteText = document.createElement("p");
-  noteText.innerHTML =
-    "Обратите внимание, что расчёты являются приблизительными и могут отличаться от фактических результатов.";
-  conclusionContainer.appendChild(noteText);
+    });
+  
+    // Добавляем примечание
+    const noteText = document.createElement("p");
+    noteText.innerHTML =
+      "Обратите внимание, что расчёты являются приблизительными и могут отличаться от фактических результатов.";
+    conclusionContainer.appendChild(noteText);
 }
 
 /**
