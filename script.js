@@ -160,9 +160,7 @@ function calculateResultForCTR(
   }
 
   const paybackPeriod =
-    profitDiffDay > 0
-      ? testCosts / profitDiffDay
-      : "Не окупится";
+    profitDiffDay > 0 ? testCosts / profitDiffDay : "Не окупится";
   const roiWeek =
     profitDiffWeek > 0
       ? ((profitDiffWeek - testCosts) / testCosts) * 100
@@ -184,7 +182,6 @@ function calculateResultForCTR(
     "Выкупов в день": redemptions,
     "Выручка в день, руб.": revenue,
     "Расходы на рекламу в день, руб.": adCost,
-    "Затраты на тесты": isInitial ? 0 : testCosts,
     "Чистая прибыль в день, руб.": profit,
     "Чистая прибыль в неделю, руб.": weeklyProfit,
     "Чистая прибыль в месяц, руб.": monthlyProfit,
@@ -209,8 +206,10 @@ function calculateResultForCTR(
 function calculateResults(data) {
   const impressions = calculateImpressions(data.dailyBudget, data.cpm);
   const totalDesignCost = data.designCostPerSlide * data.numDesignOptions;
-  const testAdCost = data.numDesignOptions * data.impressionsPerTest * (data.cpm / 1000);
+  const testAdCost =
+    data.numDesignOptions * data.impressionsPerTest * (data.cpm / 1000);
   const testCosts = totalDesignCost + testAdCost;
+  const trafficCosts = testCosts - totalDesignCost;
 
   const ctrValues = [
     data.currentCtr,
@@ -221,7 +220,8 @@ function calculateResults(data) {
 
   const results = {};
   ctrValues.forEach((ctr, index) => {
-    const resultKey = index === 0 ? "Исходные данные" : `CTR +${ctr - data.currentCtr}%`;
+    const resultKey =
+      index === 0 ? "Исходные данные" : `CTR +${ctr - data.currentCtr}%`;
     results[resultKey] = calculateResultForCTR(
       data,
       ctr,
@@ -229,6 +229,10 @@ function calculateResults(data) {
       testCosts,
       index === 0
     );
+    // Добавляем затраты на дизайн и трафик в каждый результат
+    results[resultKey]["Затраты на тесты"] = testCosts;
+    results[resultKey]["Затраты на дизайн"] = totalDesignCost;
+    results[resultKey]["Затраты на трафик"] = trafficCosts;
   });
 
   return results;
@@ -272,12 +276,19 @@ function displayResults(results) {
 
   // Добавляем строку для затрат на тесты в результаты
   const testCosts = results["Исходные данные"]["Затраты на тесты"];
+  const designCosts = results["Исходные данные"]["Затраты на дизайн"];
+  const trafficCosts = results["Исходные данные"]["Затраты на трафик"];
 
   //   const metrics = Object.keys(results["Исходные данные"]);
   const metrics = Object.keys(results["Исходные данные"]).filter(
-    (key) => key !== "Затраты на тесты"
+    (key) =>
+      key !== "Затраты на тесты" &&
+      key !== "Затраты на дизайн" &&
+      key !== "Затраты на трафик"
   );
   metrics.splice(7, 0, "Затраты на тесты"); // Вставляем строку "Затраты на тесты" после "Расходы на рекламу в день, руб."
+  metrics.splice(8, 0, "Затраты на дизайн");
+  metrics.splice(9, 0, "Затраты на трафик");
 
   metrics.forEach((metric) => {
     const row = table.insertRow();
@@ -287,14 +298,7 @@ function displayResults(results) {
     // Добавляем данные для каждого CTR, начиная с "Исходные данные"
     headerTitles.slice(1).forEach((ctrKey) => {
       const valueCell = row.insertCell();
-      let value;
-
-      if (metric === "Затраты на тесты") {
-        // Для строки "Затраты на тесты" отображаем общее значение затрат
-        value = testCosts;
-      } else {
-        value = results[ctrKey][metric];
-      }
+      let value = results[ctrKey][metric];
 
       // Форматируем числовые значения
       if (typeof value === "number") {
@@ -342,7 +346,11 @@ function displayResults(results) {
       conclusionCtrText.innerHTML += `<b>При увеличении CTR на ${ctrValue}%:</b> `;
 
       if (paybackPeriod === "Не окупится") {
-        conclusionCtrText.innerHTML += `При заданных параметрах A/B-тестирование не окупается. `;
+        conclusionCtrText.innerHTML += `При заданных параметрах A/B-тестирование не окупается. Затраты на дизайн: ${designCosts.toLocaleString(
+          "ru-RU"
+        )} руб., затраты на трафик: ${trafficCosts.toLocaleString(
+          "ru-RU"
+        )} руб. `;
         // Проверяем, что изменение прибыли не равно нулю
         if (profitIncrease3Months !== 0) {
           conclusionCtrText.innerHTML += `Ваша чистая прибыль за 3 месяца может измениться на ${profitIncrease3MonthsPercent.toFixed(2)}% (${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб.). `;
@@ -350,9 +358,21 @@ function displayResults(results) {
         conclusionCtrText.innerHTML +=
           "Рекомендуется скорректировать исходные данные (например, снизить затраты на тесты, оптимизировать рекламный бюджет) или пересмотреть подход к A/B-тестированию.";
       } else if (paybackPeriod === 0) {
-        conclusionCtrText.innerHTML += `При текущих вводных данных о CTR, A/B-тестирование не окупается, так как у вас ещё нет положительной динамики по прибыли. Рекомендуется провести тесты и получить данные о CTR, на основе которых можно точнее оценить окупаемость.`;
+        conclusionCtrText.innerHTML += `При текущих вводных данных о CTR, A/B-тестирование не окупается, так как у вас ещё нет положительной динамики по прибыли. Затраты на дизайн: ${designCosts.toLocaleString("ru-RU")} руб., затраты на трафик: ${trafficCosts.toLocaleString("ru-RU")} руб. Рекомендуется провести тесты и получить данные о CTR, на основе которых можно точнее оценить окупаемость.`;
       } else {
-        conclusionCtrText.innerHTML += `A/B-тестирование при заданных параметрах окупается за ${paybackPeriod.toFixed(1)} ${getDaysEnding(paybackPeriod)} и потенциально принесёт ${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб. дополнительной прибыли за 3 месяца. `;
+        conclusionCtrText.innerHTML += `A/B-тестирование при заданных параметрах окупается за ${paybackPeriod.toFixed(
+          1
+        )} ${getDaysEnding(
+          paybackPeriod
+        )} и потенциально принесёт ${results[
+          ctrKey
+        ]["Изменение прибыли за 3 месяца, руб."].toLocaleString(
+          "ru-RU"
+        )} руб. дополнительной прибыли за 3 месяца. Затраты на дизайн: ${designCosts.toLocaleString(
+          "ru-RU"
+        )} руб., затраты на трафик: ${trafficCosts.toLocaleString(
+          "ru-RU"
+        )} руб.`;
       }
 
       conclusionContainer.appendChild(conclusionCtrText);
@@ -364,6 +384,19 @@ function displayResults(results) {
   noteText.innerHTML =
     "Обратите внимание, что расчёты являются приблизительными и могут отличаться от фактических результатов.";
   conclusionContainer.appendChild(noteText);
+
+  // Добавляем блок "Что дальше?"
+  const whatNextContainer = document.createElement("div");
+  whatNextContainer.setAttribute("id", "what-next");
+  conclusionContainer.appendChild(whatNextContainer);
+
+  const whatNextHeader = document.createElement("h3");
+  whatNextHeader.textContent = "Что дальше?";
+  whatNextContainer.appendChild(whatNextHeader);
+
+  const whatNextText = document.createElement("p");
+  whatNextText.innerHTML = `Вы увидели, как A/B-тестирование может увеличить вашу прибыль на Wildberries. Но это только вершина айсберга! A/B-тесты – это не разовая акция, а постоянный процесс улучшения ваших карточек товаров. Рынок не стоит на месте, конкуренты не дремлют. Регулярное A/B-тестирование – это ваш ключ к тому, чтобы всегда быть на шаг впереди.`;
+  whatNextContainer.appendChild(whatNextText);
 }
 
 /**
