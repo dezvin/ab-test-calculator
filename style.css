@@ -236,9 +236,10 @@ footer {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    text-decoration: none; /* Убираем подчеркивание */
+    text-decoration: none; /* Убираем подчеркивание для ссылки */
     display: inline-block; /* Чтобы кнопка была в строке с текстом */
     margin-top: 10px; /* Отступ сверху */
+    font-family: inherit; /* Наследование шрифта */
 }
 
 .master-class-button:hover {
