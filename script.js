@@ -116,15 +116,16 @@ function calculateProfit(redemptions, margin, adCost) {
 function calculateResults(data) {
   const impressions = calculateImpressions(data.dailyBudget, data.cpm);
   const totalDesignCost = data.designCostPerSlide * data.numDesignOptions;
-  const testAdCost = data.numDesignOptions * (1000 / data.cpm) * data.designCostPerSlide;
+  const testAdCost = data.numDesignOptions * data.impressionsPerTest * (data.cpm / 1000);
 
   const results = {
     "Исходные данные": calculateResultForCTR(
       data,
       data.currentCtr,
       impressions,
-      0,
-      0
+      totalDesignCost,
+      testAdCost,
+      true // Флаг, указывающий, что это расчет для исходных данных
     ),
     "CTR +1%": calculateResultForCTR(
       data,
@@ -160,103 +161,98 @@ function calculateResults(data) {
  * @param {number} impressions - Количество показов.
  * @param {number} totalDesignCost - Общие затраты на дизайн.
  * @param {number} testAdCost - Затраты на рекламу для теста.
+ * @param {boolean} isInitial - Флаг, указывающий, является ли расчет исходным.
  * @returns {object} - Объект с результатами расчётов для заданного CTR.
  */
-function calculateResultForCTR(
-  data,
-  ctr,
-  impressions,
-  totalDesignCost,
-  testAdCost
-) {
-  const clicks = calculateClicks(impressions, ctr);
-  const addToCart = calculateAddToCart(clicks, data.cartConversion);
-  const orders = calculateOrders(addToCart, data.orderConversion);
-  const redemptions = calculateRedemptions(orders, data.redemptionRate);
-  const revenue = calculateRevenue(redemptions, data.productPrice);
-  const adCost = data.dailyBudget;
-  const profit = calculateProfit(redemptions, data.margin, adCost);
-  const weeklyProfit = profit * 7;
-  const monthlyProfit = profit * 30;
-  const quarterlyProfit = profit * 90;
-  const testCosts = totalDesignCost + testAdCost;
-
-  let profitDiffDay = 0;
-  let profitDiffWeek = 0;
-  let profitDiffMonth = 0;
-  let profitDiffQuarter = 0;
-
-  // Расчет изменения прибыли только для случаев с увеличенным CTR
-  if (ctr > data.currentCtr) {
-    const initialImpressions = calculateImpressions(data.dailyBudget, data.cpm);
-    const initialClicks = calculateClicks(initialImpressions, data.currentCtr);
-    const initialAddToCart = calculateAddToCart(
-      initialClicks,
-      data.cartConversion
-    );
-    const initialOrders = calculateOrders(initialAddToCart, data.orderConversion);
-    const initialRedemptions = calculateRedemptions(
-      initialOrders,
-      data.redemptionRate
-    );
-    const initialProfit = calculateProfit(
-      initialRedemptions,
-      data.margin,
-      data.dailyBudget
-    );
-
-    profitDiffDay = profit - initialProfit;
-    profitDiffWeek = profitDiffDay * 7;
-    profitDiffMonth = profitDiffDay * 30;
-    profitDiffQuarter = profitDiffDay * 90;
+function calculateResultForCTR(data, ctr, impressions, totalDesignCost, testAdCost, isInitial = false) {
+    const clicks = calculateClicks(impressions, ctr);
+    const addToCart = calculateAddToCart(clicks, data.cartConversion);
+    const orders = calculateOrders(addToCart, data.orderConversion);
+    const redemptions = calculateRedemptions(orders, data.redemptionRate);
+    const revenue = calculateRevenue(redemptions, data.productPrice);
+    const adCost = data.dailyBudget;
+    const profit = calculateProfit(redemptions, data.margin, adCost);
+    const weeklyProfit = profit * 7;
+    const monthlyProfit = profit * 30;
+    const quarterlyProfit = profit * 90;
+    const testCosts = isInitial ? 0 : totalDesignCost + testAdCost;
+  
+    let profitDiffDay = 0;
+    let profitDiffWeek = 0;
+    let profitDiffMonth = 0;
+    let profitDiffQuarter = 0;
+  
+    // Расчет изменения прибыли только для случаев с увеличенным CTR
+    if (!isInitial) {
+      const initialImpressions = calculateImpressions(data.dailyBudget, data.cpm);
+      const initialClicks = calculateClicks(initialImpressions, data.currentCtr);
+      const initialAddToCart = calculateAddToCart(
+        initialClicks,
+        data.cartConversion
+      );
+      const initialOrders = calculateOrders(initialAddToCart, data.orderConversion);
+      const initialRedemptions = calculateRedemptions(
+        initialOrders,
+        data.redemptionRate
+      );
+      const initialProfit = calculateProfit(
+        initialRedemptions,
+        data.margin,
+        data.dailyBudget
+      );
+  
+      profitDiffDay = profit - initialProfit;
+      profitDiffWeek = profitDiffDay * 7;
+      profitDiffMonth = profitDiffDay * 30;
+      profitDiffQuarter = profitDiffDay * 90;
+    }
+  
+    const paybackPeriod =
+      profitDiffDay > 0
+        ? (totalDesignCost + testAdCost) / profitDiffDay
+        : "Не окупится";
+    const roiWeek =
+      profitDiffWeek > 0
+        ? ((profitDiffWeek - (totalDesignCost + testAdCost)) /
+            (totalDesignCost + testAdCost)) *
+          100
+        : 0;
+    const roiMonth =
+      profitDiffMonth > 0
+        ? ((profitDiffMonth - (totalDesignCost + testAdCost)) /
+            (totalDesignCost + testAdCost)) *
+          100
+        : 0;
+    const roiQuarter =
+      profitDiffQuarter > 0
+        ? ((profitDiffQuarter - (totalDesignCost + testAdCost)) /
+            (totalDesignCost + testAdCost)) *
+          100
+        : 0;
+  
+    return {
+      "Показов в день": impressions,
+      "Кликов в день": clicks,
+      "Добавлений в корзину в день": addToCart,
+      "Заказов в день": orders,
+      "Выкупов в день": redemptions,
+      "Выручка в день, руб.": revenue,
+      "Расходы на рекламу в день, руб.": adCost,
+      "Затраты на тесты": testCosts,
+      "Чистая прибыль в день, руб.": profit,
+      "Чистая прибыль в неделю, руб.": weeklyProfit,
+      "Чистая прибыль в месяц, руб.": monthlyProfit,
+      "Чистая прибыль за 3 месяца, руб.": quarterlyProfit,
+      "Изменение прибыли в день, руб.": profitDiffDay,
+      "Изменение прибыли в неделю, руб.": profitDiffWeek,
+      "Изменение прибыли в месяц, руб.": profitDiffMonth,
+      "Изменение прибыли за 3 месяца, руб.": profitDiffQuarter,
+      "Срок окупаемости затрат, дней": paybackPeriod,
+      "ROI за неделю, %": roiWeek,
+      "ROI за месяц, %": roiMonth,
+      "ROI за 3 месяца, %": roiQuarter,
+    };
   }
-
-  const paybackPeriod =
-    profitDiffDay > 0
-      ? (totalDesignCost + testAdCost) / profitDiffDay
-      : "Не окупится";
-  const roiWeek =
-    profitDiffWeek > 0
-      ? ((profitDiffWeek - (totalDesignCost + testAdCost)) /
-          (totalDesignCost + testAdCost)) *
-        100
-      : 0;
-  const roiMonth =
-    profitDiffMonth > 0
-      ? ((profitDiffMonth - (totalDesignCost + testAdCost)) /
-          (totalDesignCost + testAdCost)) *
-        100
-      : 0;
-  const roiQuarter =
-    profitDiffQuarter > 0
-      ? ((profitDiffQuarter - (totalDesignCost + testAdCost)) /
-          (totalDesignCost + testAdCost)) *
-        100
-      : 0;
-
-  return {
-    "Показов в день": impressions,
-    "Кликов в день": clicks,
-    "Добавлений в корзину в день": addToCart,
-    "Заказов в день": orders,
-    "Выкупов в день": redemptions,
-    "Выручка в день, руб.": revenue,
-    "Расходы на рекламу в день, руб.": adCost,
-    "Затраты на тесты": testCosts,
-    "Чистая прибыль в день, руб.": profit,
-    "Чистая прибыль в неделю, руб.": weeklyProfit,
-    "Чистая прибыль в месяц, руб.": monthlyProfit,
-    "Чистая прибыль за 3 месяца, руб.": quarterlyProfit,
-    "Изменение прибыли в день, руб.": profitDiffDay,
-    "Изменение прибыли в неделю, руб.": profitDiffWeek,
-    "Изменение прибыли в месяц, руб.": profitDiffMonth,
-    "Изменение прибыли за 3 месяца, руб.": profitDiffQuarter,
-    "Срок окупаемости затрат, дней": paybackPeriod,
-    "ROI за неделю, %": roiWeek,
-    "ROI за месяц, %": roiMonth,
-    "ROI за 3 месяца, %": roiQuarter,
-  };
-}
 
 /**
  * Выводит результаты расчётов на страницу.
@@ -294,10 +290,10 @@ function displayResults(results) {
     headerCell.style.textAlign = "center";
   });
 
-// Добавляем строку для затрат на тесты в результаты
+  // Добавляем строку для затрат на тесты в результаты
   const testCosts = results["Исходные данные"]["Затраты на тесты"];
 
-//   const metrics = Object.keys(results["Исходные данные"]);
+  //   const metrics = Object.keys(results["Исходные данные"]);
   const metrics = Object.keys(results["Исходные данные"]).filter(
     (key) => key !== "Затраты на тесты"
   );
@@ -353,6 +349,7 @@ function handleSubmit(event) {
       margin: getInputValue("margin"),
       designCostPerSlide: getInputValue("design-cost-per-slide"),
       numDesignOptions: getInputValue("num-design-options"),
+      impressionsPerTest: getInputValue("impressions-per-test"),
     };
 
     const results = calculateResults(data);
