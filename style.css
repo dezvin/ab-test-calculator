@@ -15,34 +15,6 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.header {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 20px;
-}
-
-.logo {
-    height: 48px; /* Высота логотипа */
-    margin-right: 10px; /* Расстояние между логотипом и текстом */
-}
-
-.header-text {
-    text-align: left;
-}
-
-.header-title {
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-}
-
-.header-subtitle {
-    font-size: 16px;
-    color: #666;
-}
-
 h1 {
     text-align: left;
     margin-bottom: 30px;
@@ -155,15 +127,16 @@ th {
 /* Стили для шапки */
 .header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    padding: 20px;
+    padding: 20px 0;
     border-bottom: 1px solid #ccc;
     margin-bottom: 20px;
 }
 
 .logo {
     height: 48px; /* Подберите оптимальную высоту логотипа */
+    margin-right: 20px;
 }
 
 .header-text {
@@ -174,11 +147,13 @@ th {
     font-size: 20px;
     font-weight: bold;
     color: #333;
+    margin: 0;
 }
 
 .header-subtitle {
     font-size: 16px;
     color: #666;
+    margin: 0;
 }
 
 /* Стили для инструкции */
