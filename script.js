@@ -411,13 +411,12 @@ function displayResults(results) {
   masterClassText.innerHTML = `Присоединяйтесь к чату предзаписи, чтобы узнать программу мастер-класса по A/B-тестированию карточек товаров на Wildberries, где вы сможете познать науку A/B-тестирования!`;
   masterClassContainer.appendChild(masterClassText);
 
-  const masterClassButton = document.createElement("button");
+  const masterClassButton = document.createElement("a");
+  masterClassButton.setAttribute("href", "https://t.me/+czhYbv8i_ZMxNjRi"); // Замените на вашу ссылку
+  masterClassButton.setAttribute("target", "_blank"); // Открывать ссылку в новой вкладке
   masterClassButton.classList.add("master-class-button");
   masterClassButton.textContent = "Узнать программу мастер-класса";
   masterClassContainer.appendChild(masterClassButton);
-
-  masterClassButton.addEventListener('click', function() {
-      window.open("https://t.me/+czhYbv8i_ZMxNjRi"); // Открываем ссылку в новой вкладке
 }
 
 /**
