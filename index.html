@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор окупаемости A/B-тестирования</title>
+    <meta name="description" content="Рассчитайте, как A/B-тестирование на Wildberries поможет увеличить вашу прибыль.">
+    <meta name="keywords" content="A/B-тестирование, Wildberries, калькулятор, ROI, CTR, окупаемость, прибыль, wb, вб, продажи, продвижение">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div class="container">
+        <h1>Калькулятор окупаемости A/B-тестирования на Wildberries</h1>
+
+        <form id="calculator-form">
+            <h2>Исходные данные:</h2>
+            <div class="form-group">
+                <label for="daily-budget">Дневной бюджет на рекламу, руб.*:</label>
+                <input type="number" id="daily-budget" name="daily-budget" value="3000" required>
+            </div>
+            <div class="form-group">
+                <label for="cpm">CPM (стоимость 1000 показов), руб.*:</label>
+                <input type="number" id="cpm" name="cpm" value="150" required>
+            </div>
+            <div class="form-group">
+                <label for="current-ctr">Текущий CTR, %*:</label>
+                <input type="number" id="current-ctr" name="current-ctr" value="3" required>
+            </div>
+            <div class="form-group">
+                <label for="cart-conversion">Конверсия в корзину, %*:</label>
+                <input type="number" id="cart-conversion" name="cart-conversion" value="10" required>
+            </div>
+            <div class="form-group">
+                <label for="order-conversion">Конверсия в заказ, %*:</label>
+                <input type="number" id="order-conversion" name="order-conversion" value="5" required>
+            </div>
+            <div class="form-group">
+                <label for="redemption-rate">Процент выкупа, %*:</label>
+                <input type="number" id="redemption-rate" name="redemption-rate" value="90" required>
+            </div>
+            <div class="form-group">
+                <label for="product-price">Средняя стоимость товара, руб.*:</label>
+                <input type="number" id="product-price" name="product-price" value="1000" required>
+            </div>
+            <div class="form-group">
+                <label for="margin">Маржа с единицы товара, руб.*:</label>
+                <input type="number" id="margin" name="margin" value="300" required>
+            </div>
+            <div class="form-group">
+                <label for="design-cost-per-slide">Стоимость 1 слайда дизайна, руб.*:</label>
+                <input type="number" id="design-cost-per-slide" name="design-cost-per-slide" value="750" required>
+            </div>
+            <div class="form-group">
+                <label for="num-design-options">Кол-во вариантов дизайна для теста, шт.*:</label>
+                <input type="number" id="num-design-options" name="num-design-options" value="20" required>
+                <div class="hint">Обычно A/B тест главного изображения запускают сразу на 20 вариантах, чтобы сэкономить время</div>
+            </div>
+            <button type="submit">Рассчитать</button>
+            <div class="note">* - Обязательные для заполнения поля</div>
+        </form>
+
+        <div id="results">
+            </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
