@@ -309,26 +309,6 @@ footer {
     color: #718096;
 }
 
-/* Стили для кнопки мастер класса */
-.master-class-button {
-    background-color: #4299e1; /* Цвет ВК */
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    text-decoration: none; /* Убираем подчеркивание */
-    display: inline-block; /* Чтобы кнопка была в строке с текстом */
-    margin-top: 10px; /* Отступ сверху */
-    transition: background-color 0.2s ease-in-out;
-}
-
-.master-class-button:hover {
-    background-color: #3182ce; /* Цвет ВК при наведении */
-}
-
-
 /* Блок Что Дальше? */
 #what-next {
     margin-top: 30px;
@@ -356,17 +336,19 @@ footer {
 /* Блок Хотите освоить A/B тестирование? */
 #master-class {
     margin-top: 30px;
-    padding: 20px;
-    background-color: #f7fafc;
+    padding: 25px;
+    background-color: #f7fafc; /* Оставляем фон светло-серым для баланса */
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border: 2px solid #e66a9e; /* Добавляем рамку в стиле Wildberries */
 }
 
 #master-class h3 {
-    color: #1a202c;
-    font-size: 1.5em;
+    color: #e66a9e; /* Яркий акцентный цвет Wildberries */
+    font-size: 1.8em;
     font-weight: 700;
     margin-bottom: 10px;
+    text-align: center;
 }
 
 #master-class p {
@@ -374,9 +356,44 @@ footer {
     line-height: 1.6;
     font-size: 16px;
     margin-bottom: 10px;
+    text-align: center;
+}
+
+/* Кнопка "Узнать программу мастер-класса" */
+.master-class-button {
+    background: linear-gradient(to right, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    color: white;
+    padding: 14px 25px;
+    border: none;
+    border-radius: 30px; /* Делаем кнопку более скруглённой */
+    cursor: pointer;
+    font-size: 18px;
+    text-decoration: none; /* Убираем подчеркивание */
+    display: inline-block; /* Чтобы кнопка была в строке с текстом */
+    margin-top: 15px; /* Отступ сверху */
+    transition: background 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Добавляем тень */
+    text-align: center;
+    background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
 }
 
 
+.master-class-button:hover {
+    background-position: 100% 50%;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
 /* Улучшение фокуса на элементах формы */
 input[type="number"]:focus {
   outline: none;
