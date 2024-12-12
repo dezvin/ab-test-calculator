@@ -337,7 +337,7 @@ footer {
 #master-class {
     margin-top: 30px;
     padding: 25px;
-    background: linear-gradient(145deg, #f0f4f8, #e1e5eb); /* Мягкий градиент */
+    background: linear-gradient(145deg, #e0f7fa, #b2ebf2); /* Мягкий градиент */
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Легкая тень */
      border: 2px solid #e1e5eb; /* Рамка в цвет тени*/
