@@ -337,25 +337,30 @@ footer {
 #master-class {
     margin-top: 30px;
     padding: 25px;
-    background-color: #f7fafc; /* Оставляем фон светло-серым для баланса */
+    background: linear-gradient(145deg, #f0f4f8, #e1e5eb); /* Мягкий градиент */
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    border: 2px solid #e66a9e; /* Добавляем рамку в стиле Wildberries */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Легкая тень */
+     border: 2px solid #e1e5eb; /* Рамка в цвет тени*/
+    display: flex;
+    flex-direction: column; /* Размещаем элементы в колонку */
+    align-items: center; /* Центрируем элементы по горизонтали */
 }
 
+
 #master-class h3 {
-    color: #e66a9e; /* Яркий акцентный цвет Wildberries */
+    color: #3182ce; /* Акцентный синий цвет */
     font-size: 1.8em;
     font-weight: 700;
     margin-bottom: 10px;
     text-align: center;
 }
 
+
 #master-class p {
     color: #4a5568;
     line-height: 1.6;
     font-size: 16px;
-    margin-bottom: 10px;
+    margin-bottom: 20px; /* Увеличиваем отступ снизу */
     text-align: center;
 }
 
@@ -370,14 +375,11 @@ footer {
     font-size: 18px;
     text-decoration: none; /* Убираем подчеркивание */
     display: inline-block; /* Чтобы кнопка была в строке с текстом */
-    margin-top: 15px; /* Отступ сверху */
     transition: background 0.3s ease-in-out;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Добавляем тень */
-    text-align: center;
     background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
+    animation: gradient 15s ease infinite;
 }
-
 
 .master-class-button:hover {
     background-position: 100% 50%;
@@ -394,6 +396,7 @@ footer {
 		background-position: 0% 50%;
 	}
 }
+
 /* Улучшение фокуса на элементах формы */
 input[type="number"]:focus {
   outline: none;
