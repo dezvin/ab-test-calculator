@@ -130,7 +130,10 @@ function calculateResultForCTR(
 
   // Расчет изменения прибыли только для случаев с увеличенным CTR
   if (!isInitial) {
-    const initialImpressions = calculateImpressions(data.dailyBudget, data.cpm);
+    const initialImpressions = calculateImpressions(
+      data.dailyBudget,
+      data.cpm
+    );
     const initialClicks = calculateClicks(
       initialImpressions,
       data.currentCtr
@@ -291,12 +294,20 @@ function displayResults(results) {
   metrics.splice(9, 0, "Затраты на трафик");
 
   metrics.forEach((metric) => {
-    const row = table.insertRow();
-    const metricCell = row.insertCell();
-    metricCell.textContent = metric;
-
-    // Добавляем данные для каждого CTR, начиная с "Исходные данные"
     headerTitles.slice(1).forEach((ctrKey) => {
+      // Проверяем, нужно ли выводить данную метрику для исходных данных
+      if (
+        ctrKey === "Исходные данные" &&
+        (metric.startsWith("Изменение прибыли") ||
+          metric === "Срок окупаемости затрат, дней" ||
+          metric.startsWith("ROI"))
+      ) {
+        return; // Пропускаем итерацию, не добавляя строку в таблицу
+      }
+      const row = table.insertRow();
+      const metricCell = row.insertCell();
+      metricCell.textContent = metric;
+
       const valueCell = row.insertCell();
       let value = results[ctrKey][metric];
 
@@ -398,7 +409,7 @@ function displayResults(results) {
   whatNextText.innerHTML = `Вы увидели, как A/B-тестирование может увеличить вашу прибыль на Wildberries. Но это только вершина айсберга! A/B-тесты – это не разовая акция, а постоянный процесс улучшения ваших карточек товаров. Рынок не стоит на месте, конкуренты не дремлют. Регулярное A/B-тестирование – это ваш ключ к тому, чтобы всегда быть на шаг впереди.`;
   whatNextContainer.appendChild(whatNextText);
 
-    // Добавляем блок "Узнать программу мастер-класса"
+  // Добавляем блок "Узнать программу мастер-класса"
   const masterClassContainer = document.createElement("div");
   masterClassContainer.setAttribute("id", "master-class");
   conclusionContainer.appendChild(masterClassContainer);
