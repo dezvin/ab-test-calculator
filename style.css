@@ -1,29 +1,43 @@
 /* Общие стили */
 body {
     font-family: 'Roboto', sans-serif;
-    background-color: #f4f4f4;
+    background-color: #f8f9fa; /* Светло-серый фон */
     margin: 0;
     padding: 0;
-    color: #333;
+    color: #343a40; /* Темно-серый цвет текста */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh; /* Минимальная высота для футера */
 }
 
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+    max-width: 850px;
+    margin: 30px auto;
+    padding: 30px;
     background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Тень для карточки */
+    border-radius: 10px; /* Скругление углов */
 }
 
 h1 {
     text-align: left;
     margin-bottom: 30px;
-    color: #333;
+    color: #343a40;
+    font-weight: 700;
+    font-size: 2.5rem; /* Увеличенный размер заголовка */
 }
 
 h2 {
     margin-top: 0;
-    color: #333;
+    color: #343a40;
+    font-size: 1.8rem; /* Увеличенный размер заголовка */
+    font-weight: 600;
+}
+
+h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
 }
 
 /* Стили для формы */
@@ -32,48 +46,60 @@ form {
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px; /* Увеличенный отступ */
 }
 
 label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 1rem;
 }
 
 input[type="number"] {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 12px 15px;
+    border: 1px solid #ced4da; /* Светло-серый цвет границы */
+    border-radius: 25px; /* Скругление углов */
     box-sizing: border-box;
-    font-size: 16px;
+    font-size: 1rem;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease; /* Плавное изменение тени и цвета границы */
+}
+
+input[type="number"]:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(81, 203, 238, 0.8); /* Голубая тень при фокусе */
+    border-color: #51cbce; /* Голубой цвет границы при фокусе */
 }
 
 .hint {
-    font-size: 14px;
-    color: #777;
-    margin-top: 3px;
+    font-size: 0.9rem;
+    color: #6c757d; /* Серый цвет подсказки */
+    margin-top: 5px;
 }
 
 .calculate-button {
-    background-color: #4CAF50;
+    background: linear-gradient(135deg, #51cbce, #98d98e); /* Градиент */
     color: white;
-    padding: 12px 20px;
+    padding: 15px 30px;
     border: none;
-    border-radius: 4px;
+    border-radius: 25px; /* Скругление углов */
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: all 0.3s ease; /* Плавное изменение при наведении */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Тень для кнопки */
 }
 
 .calculate-button:hover {
-    background-color: #45a049;
+    transform: translateY(-2px); /* Поднятие кнопки при наведении */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Увеличенная тень при наведении */
 }
 
 .note {
-    font-size: 14px;
-    color: #777;
-    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 15px;
 }
 
 /* Стили для результатов */
@@ -84,55 +110,83 @@ input[type="number"] {
 #results h3 {
     text-align: center;
     margin-bottom: 20px;
-    color: #333;
+    color: #343a40;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Тень для таблицы */
 }
 
-th, td {
+th,
+td {
     text-align: left;
-    padding: 8px;
-    border: 1px solid #ddd;
+    padding: 12px 15px;
+    border-bottom: 1px solid #dee2e6; /* Светло-серый разделитель */
 }
 
 th {
-    background-color: #f0f0f0;
-    font-weight: bold;
+    background-color: #e9ecef; /* Светло-серый фон для заголовков */
+    font-weight: 700;
+}
+
+/* Стили для строк таблицы */
+tr:nth-child(even) {
+    background-color: #f8f9fa; /* Светло-серый фон для четных строк */
 }
 
 /* Адаптивность */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     .container {
-        padding: 10px;
+        margin: 20px;
+        padding: 20px;
     }
 
-    input[type="number"] {
-        font-size: 14px;
+    h1 {
+        font-size: 2rem;
     }
 
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.2rem;
+    }
+
+    input[type="number"],
     .calculate-button {
-        font-size: 14px;
-        padding: 10px 15px;
+        font-size: 1rem;
     }
 
     table {
-        font-size: 14px;
+        font-size: 0.9rem;
+    }
+
+    .hint,
+    .note {
+        font-size: 0.8rem;
+    }
+
+    th,
+    td {
+        padding: 10px;
     }
 }
 
 /* Стили для шапки */
 header {
     padding: 20px 0;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #dee2e6;
     margin-bottom: 20px;
+    background-color: #fff;
+    width: 100%;
 }
 
 .logo {
-    height: 48px; /* Подберите оптимальную высоту логотипа */
+    height: 55px;
     margin-right: 20px;
     vertical-align: middle;
 }
@@ -143,15 +197,15 @@ header {
 }
 
 .header-title {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: bold;
-    color: #333;
+    color: #343a40;
     margin: 0;
 }
 
 .header-subtitle {
-    font-size: 16px;
-    color: #666;
+    font-size: 17px;
+    color: #6c757d;
     margin: 0;
 }
 
@@ -159,88 +213,56 @@ header {
 .instruction {
     text-align: left;
     margin-bottom: 20px;
-    font-size: 16px;
+    font-size: 1rem;
+    line-height: 1.6; /* Увеличенный межстрочный интервал */
 }
 
 /* Стили для блока выводов */
 #conclusion {
-    margin-top: 20px;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 #conclusion p {
-    margin-bottom: 10px;
-    line-height: 1.5;
+    margin-bottom: 15px;
+    line-height: 1.6;
 }
 
 #conclusion strong {
     font-weight: bold;
 }
 
-/* Дополнительные стили и улучшения */
-
-/* Стили для fieldset (группировка полей формы) */
-fieldset {
-    border: none;
-    padding: 0;
-    margin: 0;
-}
-
-/* Улучшение адаптивности таблицы */
-@media (max-width: 600px) {
-    table {
-        display: block;
-        overflow-x: auto;
-    }
-}
-
-/* Стили для примечания */
-.note {
-    margin-top: 10px;
-    font-size: 0.9em;
-    color: #777;
-}
-
-/* Улучшение типографики */
-h1, h2, h3 {
-    font-weight: 600;
-}
-
-h1 {
-    font-size: 2em;
-}
-
-h2 {
-    font-size: 1.5em;
-}
-
-h3 {
-    font-size: 1.2em;
-}
-
-/* Стили для футера (если нужен) */
-footer {
-    margin-top: 30px;
-    text-align: center;
-    font-size: 0.9em;
-    color: #777;
-}
-
+/* Стили для кнопки мастер-класса */
 .master-class-button {
-    background-color: #5181b8; /* Цвет ВК */
+    background: linear-gradient(135deg, #5181b8, #79a9d1); /* Градиент в стиле ВК */
     color: white;
-    padding: 12px 20px;
+    padding: 15px 30px;
     border: none;
-    border-radius: 4px;
+    border-radius: 25px;
     cursor: pointer;
-    font-size: 16px;
-    text-decoration: none; /* Убираем подчеркивание */
-    display: inline-block; /* Чтобы кнопка была в строке с текстом */
-    margin-top: 10px; /* Отступ сверху */
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .master-class-button:hover {
-    background-color: #4272a9; /* Цвет ВК при наведении */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Стили для футера */
+footer {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6c757d;
+    width: 100%;
+    padding: 20px 0;
 }
