@@ -249,6 +249,7 @@ function calculateResults(data) {
  * @param {object} results - Объект с результатами расчётов.
  */
 function displayResults(results) {
+  console.log("Объект results в displayResults:", results);
   const resultsContainer = document.getElementById("results");
   resultsContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых результатов
 
@@ -488,6 +489,7 @@ function handleSubmit(event) {
     };
 
     const results = calculateResults(data);
+    console.log("Результат calculateResults:", results);
     displayResults(results);
   } catch (error) {
     alert(error.message);
