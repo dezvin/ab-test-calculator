@@ -251,11 +251,6 @@ function calculateResults(data) {
  *
  * @param {object} results - Объект с результатами расчётов.
  */
-/**
- * Выводит результаты расчётов на страницу.
- *
- * @param {object} results - Объект с результатами расчётов.
- */
 function displayResults(results) {
   const resultsContainer = document.getElementById("results");
   resultsContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых результатов
@@ -287,21 +282,12 @@ function displayResults(results) {
     headerCell.style.textAlign = "center";
   });
 
-  // Добавляем строку для затрат на тесты в результаты
-  const testCosts = results["Исходные данные"]["Затраты на тесты"];
-  const designCosts = results["Исходные данные"]["Затраты на дизайн"];
-  const trafficCosts = results["Исходные данные"]["Затраты на трафик"];
-
-  const metrics = Object.keys(results["Исходные данные"]).filter(
-    (key) =>
-      key !== "Затраты на тесты" &&
-      key !== "Затраты на дизайн" &&
-      key !== "Затраты на трафик"
-  );
-  metrics.splice(7, 0, "Затраты на тесты");
-  metrics.splice(8, 0, "Затраты на дизайн");
-  metrics.splice(9, 0, "Затраты на трафик");
-
+  // **Исправленный блок формирования массива metrics:**
+  const metrics = Object.keys(results["Исходные данные"]); // Берем все ключи, без фильтрации
+  // **Удаляем splice, он больше не нужен:**
+  // metrics.splice(7, 0, "Затраты на тесты");
+  // metrics.splice(8, 0, "Затраты на дизайн");
+  // metrics.splice(9, 0, "Затраты на трафик");
 
   metrics.forEach((metric) => {
     const row = table.insertRow();
@@ -316,14 +302,12 @@ function displayResults(results) {
       const ctrDeltaString = ctrKey.replace("CTR +", "").replace("%", "").trim();
       const ctrDelta = parseFloat(ctrDeltaString.replace(',', '.'));
 
-
       if (ctrKey === "Исходные данные") {
         value = results[ctrKey][metric];
       } else {
         const currentResultKey = `CTR +${ctrDelta.toFixed(1)}%`;
         value = results[currentResultKey][metric];
       }
-
 
       if (ctrKey === "Исходные данные") {
         if (
@@ -340,22 +324,37 @@ function displayResults(results) {
         } else if (typeof value === "number") {
           value = value.toLocaleString("ru-RU", { maximumFractionDigits: 2 });
         }
-
       } else {
         if (typeof value === "number") {
           value = value.toLocaleString("ru-RU", { maximumFractionDigits: 2 });
         }
       }
-
       valueCell.textContent = value;
-
-      // Добавляем стили для центрирования текста в ячейках данных
       valueCell.style.textAlign = "center";
     });
   });
 
+  // **Вывод "Затрат" отдельными строками после основного цикла:**
+  const costsMetrics = [
+    "Затраты на тесты",
+    "Затраты на дизайн",
+    "Затраты на трафик"
+  ];
 
-
+  costsMetrics.forEach(metric => {
+    const row = table.insertRow();
+    const metricCell = row.insertCell();
+    metricCell.textContent = metric;
+    headerTitles.slice(1).forEach(ctrKey => { // Re-use headerTitles для колонок
+      const valueCell = row.insertCell();
+      let value = results[ctrKey][metric];
+      if (typeof value === "number") {
+        value = value.toLocaleString("ru-RU", { maximumFractionDigits: 2 });
+      }
+      valueCell.textContent = value;
+      valueCell.style.textAlign = "center";
+    });
+  });
 
   // Добавляем выводы после таблицы
   const conclusionContainer = document.getElementById("conclusion");
