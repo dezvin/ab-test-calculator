@@ -209,38 +209,43 @@ function calculateResultForCTR(
  * @returns {object} - Объект с результатами расчётов.
  */
 function calculateResults(data) {
-  const impressions = calculateImpressions(data.dailyBudget, data.cpm);
-  const totalDesignCost = data.designCostPerSlide * data.numDesignOptions;
-  const testAdCost =
-    data.numDesignOptions * data.impressionsPerTest * (data.cpm / 1000);
-  const testCosts = totalDesignCost + testAdCost;
-  const trafficCosts = testCosts - totalDesignCost;
+  try {
+    const impressions = calculateImpressions(data.dailyBudget, data.cpm);
+    const totalDesignCost = data.designCostPerSlide * data.numDesignOptions;
+    const testAdCost =
+      data.numDesignOptions * data.impressionsPerTest * (data.cpm / 1000);
+    const testCosts = totalDesignCost + testAdCost;
+    const trafficCosts = testCosts - totalDesignCost;
 
-  const ctrValues = [
-    data.currentCtr,
-    data.currentCtr + 1,
-    data.currentCtr + 2,
-    data.currentCtr + 3,
-  ];
+    const ctrValues = [
+      data.currentCtr,
+      data.currentCtr + 1,
+      data.currentCtr + 2,
+      data.currentCtr + 3,
+    ];
 
-  const results = {};
-  ctrValues.forEach((ctr, index) => {
-    const resultKey =
-      index === 0 ? "Исходные данные" : `CTR +${ctr - data.currentCtr}%`;
-    results[resultKey] = calculateResultForCTR(
-      data,
-      ctr,
-      impressions,
-      testCosts,
-      index === 0
-    );
-    // Добавляем затраты на дизайн и трафик в каждый результат
-    results[resultKey]["Затраты на тесты"] = testCosts;
-    results[resultKey]["Затраты на дизайн"] = totalDesignCost;
-    results[resultKey]["Затраты на трафик"] = trafficCosts;
-  });
+    const results = {};
+    ctrValues.forEach((ctr, index) => {
+      const resultKey =
+        index === 0 ? "Исходные данные" : `CTR +${ctr - data.currentCtr}%`;
+      results[resultKey] = calculateResultForCTR(
+        data,
+        ctr,
+        impressions,
+        testCosts,
+        index === 0
+      );
+      // Добавляем затраты на дизайн и трафик в каждый результат
+      results[resultKey]["Затраты на тесты"] = testCosts;
+      results[resultKey]["Затраты на дизайн"] = totalDesignCost;
+      results[resultKey]["Затраты на трафик"] = trafficCosts;
+    });
 
-  return results;
+    return results;
+  } catch (error) {
+    console.error("Ошибка в calculateResults:", error);
+    return {}; // Возвращаем пустой объект в случае ошибки, чтобы избежать "undefined" в displayResults
+  }
 }
 
 /**
