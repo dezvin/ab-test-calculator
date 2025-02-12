@@ -251,6 +251,11 @@ function calculateResults(data) {
  *
  * @param {object} results - Объект с результатами расчётов.
  */
+/**
+ * Выводит результаты расчётов на страницу.
+ *
+ * @param {object} results - Объект с результатами расчётов.
+ */
 function displayResults(results) {
   const resultsContainer = document.getElementById("results");
   resultsContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых результатов
@@ -293,61 +298,61 @@ function displayResults(results) {
       key !== "Затраты на дизайн" &&
       key !== "Затраты на трафик"
   );
-    metrics.splice(7, 0, "Затраты на тесты");
+  metrics.splice(7, 0, "Затраты на тесты");
   metrics.splice(8, 0, "Затраты на дизайн");
   metrics.splice(9, 0, "Затраты на трафик");
 
 
   metrics.forEach((metric) => {
-      const row = table.insertRow();
-      const metricCell = row.insertCell();
-      metricCell.textContent = metric;
+    const row = table.insertRow();
+    const metricCell = row.insertCell();
+    metricCell.textContent = metric;
 
-      // Добавляем данные для каждого CTR, начиная с "Исходные данные"
-      headerTitles.slice(1).forEach((ctrKey) => {
-          const valueCell = row.insertCell();
-          let value;
+    // Добавляем данные для каждого CTR, начиная с "Исходные данные"
+    headerTitles.slice(1).forEach((ctrKey) => {
+      const valueCell = row.insertCell();
+      let value;
 
-          const ctrDeltaString = ctrKey.replace("CTR +", "").replace("%", "").trim();
-          const ctrDelta = parseFloat(ctrDeltaString.replace(',', '.'));
-
-
-        if (ctrKey === "Исходные данные") {
-            value = results[ctrKey][metric];
-          } else {
-            const currentResultKey = `CTR +${ctrDelta.toFixed(1)}%`;
-            value = results[currentResultKey][metric];
-          }
+      const ctrDeltaString = ctrKey.replace("CTR +", "").replace("%", "").trim();
+      const ctrDelta = parseFloat(ctrDeltaString.replace(',', '.'));
 
 
-        if(ctrKey === "Исходные данные") {
-            if (
-                metric === "Изменение прибыли в день, руб." ||
-                metric === "Изменение прибыли в неделю, руб." ||
-                metric === "Изменение прибыли в месяц, руб." ||
-                metric === "Изменение прибыли за 3 месяца, руб." ||
-                metric === "Срок окупаемости затрат, дней" ||
-                metric === "ROI за неделю, %" ||
-                metric === "ROI за месяц, %" ||
-                metric === "ROI за 3 месяца, %"
-            ){
-                value = "Не рассчитывается";
-            } else if (typeof value === "number") {
-            value = value.toLocaleString("ru-RU", { maximumFractionDigits: 2 });
-            }
+      if (ctrKey === "Исходные данные") {
+        value = results[ctrKey][metric];
+      } else {
+        const currentResultKey = `CTR +${ctrDelta.toFixed(1)}%`;
+        value = results[currentResultKey][metric];
+      }
 
-        } else {
-             if (typeof value === "number") {
-               value = value.toLocaleString("ru-RU", { maximumFractionDigits: 2 });
-             }
+
+      if (ctrKey === "Исходные данные") {
+        if (
+          metric === "Изменение прибыли в день, руб." ||
+          metric === "Изменение прибыли в неделю, руб." ||
+          metric === "Изменение прибыли в месяц, руб." ||
+          metric === "Изменение прибыли за 3 месяца, руб." ||
+          metric === "Срок окупаемости затрат, дней" ||
+          metric === "ROI за неделю, %" ||
+          metric === "ROI за месяц, %" ||
+          metric === "ROI за 3 месяца, %"
+        ) {
+          value = "Не рассчитывается";
+        } else if (typeof value === "number") {
+          value = value.toLocaleString("ru-RU", { maximumFractionDigits: 2 });
         }
 
-        valueCell.textContent = value;
+      } else {
+        if (typeof value === "number") {
+          value = value.toLocaleString("ru-RU", { maximumFractionDigits: 2 });
+        }
+      }
 
-        // Добавляем стили для центрирования текста в ячейках данных
-        valueCell.style.textAlign = "center";
-      });
+      valueCell.textContent = value;
+
+      // Добавляем стили для центрирования текста в ячейках данных
+      valueCell.style.textAlign = "center";
     });
+  });
 
 
 
@@ -365,57 +370,38 @@ function displayResults(results) {
   conclusionContainer.appendChild(conclusionText);
 
   headerTitles.slice(1).forEach((ctrKey) => {
-   // const ctrValue = parseInt(ctrKey.replace(/[^0-9]/g, "")); // Получаем числовое значение CTR из заголовка
-      const ctrDeltaString = ctrKey.replace("CTR +", "").replace("%", "").trim();
-      const ctrDelta = parseFloat(ctrDeltaString.replace(',', '.'));
+    const ctrDeltaString = ctrKey.replace("CTR +", "").replace("%", "").trim();
+    const ctrDelta = parseFloat(ctrDeltaString.replace(',', '.'));
 
     // Проверяем, что это не "Исходные данные"
     if (ctrKey !== "Исходные данные") {
       const currentResultKey = `CTR +${ctrDelta.toFixed(1)}%`;
       const paybackPeriod = results[currentResultKey]["Срок окупаемости затрат, дней"];
-      const profitIncrease3Months = results[ctrKey][
-        "Изменение прибыли за 3 месяца, руб."
-      ];
+      const profitIncrease3Months = results[currentResultKey]["Изменение прибыли за 3 месяца, руб."];
 
       // Добавляем проверку деления на ноль
       const profitIncrease3MonthsPercent =
         results["Исходные данные"]["Чистая прибыль за 3 месяца, руб."] !== 0
           ? (profitIncrease3Months /
-              results["Исходные данные"]["Чистая прибыль за 3 месяца, руб."]) *
-            100
+            results["Исходные данные"]["Чистая прибыль за 3 месяца, руб."]) *
+          100
           : 0;
 
       const conclusionCtrText = document.createElement("p");
-      conclusionCtrText.innerHTML += `<b>При увеличении CTR на ${ctrDelta}%:</b> `;
+      conclusionCtrText.innerHTML += `<b>При увеличении CTR на ${ctrDelta.toFixed(1)}%:</b> `;
 
       if (paybackPeriod === "Не окупится") {
-        conclusionCtrText.innerHTML += `При заданных параметрах A/B-тестирование не окупается. Затраты на дизайн: ${designCosts.toLocaleString(
-          "ru-RU"
-        )} руб., затраты на трафик: ${trafficCosts.toLocaleString(
-          "ru-RU"
-        )} руб. `;
+        conclusionCtrText.innerHTML += `При заданных параметрах A/B-тестирование не окупается. Затраты на дизайн: ${designCosts.toLocaleString("ru-RU")} руб., затраты на трафик: ${trafficCosts.toLocaleString("ru-RU")} руб. `;
         // Проверяем, что изменение прибыли не равно нулю
         if (profitIncrease3Months !== 0) {
-          conclusionCtrText.innerHTML += `Ваша чистая прибыль за 3 месяца может измениться на ${profitIncrease3MonthsPercent.toFixed(2)}% (${results[ctrKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб.). `;
+          conclusionCtrText.innerHTML += `Ваша чистая прибыль за 3 месяца может измениться на ${profitIncrease3MonthsPercent.toFixed(2)}% (${results[currentResultKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб.). `;
         }
         conclusionCtrText.innerHTML +=
           "Рекомендуется скорректировать исходные данные (например, снизить затраты на тесты, оптимизировать рекламный бюджет) или пересмотреть подход к A/B-тестированию.";
       } else if (paybackPeriod === "Не рассчитывается") {
         conclusionCtrText.innerHTML += `Для исходных данных не рассчитывается срок окупаемости и ROI, т.к. не с чем сравнивать. Рекомендуется провести тесты и получить данные о CTR, на основе которых можно точнее оценить окупаемость.`;
       } else {
-        conclusionCtrText.innerHTML += `A/B-тестирование при заданных параметрах окупается за ${paybackPeriod.toFixed(
-          1
-        )} ${getDaysEnding(
-          paybackPeriod
-        )} и потенциально принесёт ${results[
-          ctrKey
-        ]["Изменение прибыли за 3 месяца, руб."].toLocaleString(
-          "ru-RU"
-        )} руб. дополнительной прибыли за 3 месяца. Затраты на дизайн: ${designCosts.toLocaleString(
-          "ru-RU"
-        )} руб., затраты на трафик: ${trafficCosts.toLocaleString(
-          "ru-RU"
-        )} руб.`;
+        conclusionCtrText.innerHTML += `A/B-тестирование при заданных параметрах окупается за ${paybackPeriod.toFixed(1)} ${getDaysEnding(paybackPeriod)} и потенциально принесёт ${results[currentResultKey]["Изменение прибыли за 3 месяца, руб."].toLocaleString("ru-RU")} руб. дополнительной прибыли за 3 месяца. Затраты на дизайн: ${designCosts.toLocaleString("ru-RU")} руб., затраты на трафик: ${trafficCosts.toLocaleString("ru-RU")} руб.`;
       }
 
       conclusionContainer.appendChild(conclusionCtrText);
@@ -441,7 +427,7 @@ function displayResults(results) {
   whatNextText.innerHTML = `Вы увидели, как A/B-тестирование может увеличить вашу прибыль на Wildberries. Но это только вершина айсберга! A/B-тесты – это не разовая акция, а постоянный процесс улучшения ваших карточек товаров. Рынок не стоит на месте, конкуренты не дремлют. Регулярное A/B-тестирование – это ваш ключ к тому, чтобы всегда быть на шаг впереди.`;
   whatNextContainer.appendChild(whatNextText);
 
-    // Добавляем блок "Узнать программу мастер-класса"
+  // Добавляем блок "Узнать программу мастер-класса"
   const masterClassContainer = document.createElement("div");
   masterClassContainer.setAttribute("id", "master-class");
   conclusionContainer.appendChild(masterClassContainer);
