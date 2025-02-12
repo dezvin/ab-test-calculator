@@ -229,7 +229,7 @@ function calculateResults(data) {
   const results = {};
   ctrValues.forEach((ctr, index) => {
     const resultKey =
-      index === 0 ? "Исходные данные" : `CTR +${ctr - data.currentCtr}%`;
+      index === 0 ? "Исходные данные" : `CTR +${(ctr - data.currentCtr).toFixed(1)}%`; // Исправлено здесь
     results[resultKey] = calculateResultForCTR(
       data,
       ctr,
@@ -302,12 +302,24 @@ function displayResults(results) {
       const row = table.insertRow();
       const metricCell = row.insertCell();
       metricCell.textContent = metric;
-    
+
       // Добавляем данные для каждого CTR, начиная с "Исходные данные"
       headerTitles.slice(1).forEach((ctrKey) => {
-        const valueCell = row.insertCell();
-        let value = results[ctrKey][metric];
-    
+          const valueCell = row.insertCell();
+          let value;
+
+          const ctrDeltaString = ctrKey.replace("CTR +", "").replace("%", "").trim();
+          const ctrDelta = parseFloat(ctrDeltaString.replace(',', '.'));
+
+
+        if (ctrKey === "Исходные данные") {
+            value = results[ctrKey][metric];
+          } else {
+            const currentResultKey = `CTR +${ctrDelta.toFixed(1)}%`;
+            value = results[currentResultKey][metric];
+          }
+
+
         if(ctrKey === "Исходные данные") {
             if (
                 metric === "Изменение прибыли в день, руб." ||
@@ -336,8 +348,9 @@ function displayResults(results) {
         valueCell.style.textAlign = "center";
       });
     });
-  
-  
+
+
+
 
   // Добавляем выводы после таблицы
   const conclusionContainer = document.getElementById("conclusion");
@@ -352,7 +365,9 @@ function displayResults(results) {
   conclusionContainer.appendChild(conclusionText);
 
   headerTitles.slice(1).forEach((ctrKey) => {
-    const ctrValue = parseInt(ctrKey.replace(/[^0-9]/g, "")); // Получаем числовое значение CTR из заголовка
+   // const ctrValue = parseInt(ctrKey.replace(/[^0-9]/g, "")); // Получаем числовое значение CTR из заголовка
+      const ctrDeltaString = ctrKey.replace("CTR +", "").replace("%", "").trim();
+      const ctrDelta = parseFloat(ctrDeltaString.replace(',', '.'));
 
     // Проверяем, что это не "Исходные данные"
     if (ctrKey !== "Исходные данные") {
@@ -370,7 +385,7 @@ function displayResults(results) {
           : 0;
 
       const conclusionCtrText = document.createElement("p");
-      conclusionCtrText.innerHTML += `<b>При увеличении CTR на ${ctrValue}%:</b> `;
+      conclusionCtrText.innerHTML += `<b>При увеличении CTR на ${ctrDelta}%:</b> `;
 
       if (paybackPeriod === "Не окупится") {
         conclusionCtrText.innerHTML += `При заданных параметрах A/B-тестирование не окупается. Затраты на дизайн: ${designCosts.toLocaleString(
