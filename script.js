@@ -10,7 +10,10 @@
  * @throws {Error} - Если значение в поле не является числом или отрицательное.
  */
 function getInputValue(id) {
-  const value = parseFloat(document.getElementById(id).value);
+  let valueString = document.getElementById(id).value;
+  // Заменяем запятую на точку
+  valueString = valueString.replace(',', '.');
+  const value = parseFloat(valueString);
   if (isNaN(value) || value < 0) {
     throw new Error(`Некорректное значение в поле ${id}`);
   }
