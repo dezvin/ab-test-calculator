@@ -252,11 +252,11 @@ function calculateResults(data) {
  * Выводит результаты расчётов на страницу.
  *
  * @param {object} results - Объект с результатами расчётов.
+ * @param {object} data - Объект с исходными данными (нужен для currentCtr).
  */
-function displayResults(results) {
-  console.log("Объект results в displayResults:", results);
+function displayResults(results, data) { // Добавим data в параметры
   const resultsContainer = document.getElementById("results");
-  resultsContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых результатов
+  resultsContainer.innerHTML = "";
 
   // Создаем заголовок таблицы
   const tableHeader = document.createElement("h3");
@@ -267,21 +267,18 @@ function displayResults(results) {
   const table = document.createElement("table");
   resultsContainer.appendChild(table);
 
+  // Динамически формируем headerTitles на основе currentCtr
+  const headerTitles = ["Показатель", "Исходные данные"];
+  for (let i = 1; i <= 3; i++) {
+    headerTitles.push(`CTR +${i}%`); // Формируем ключи как в calculateResults, но явно строки
+  }
+
   // Создаем строку заголовков таблицы
   const headerRow = table.insertRow();
-  const headerTitles = [
-    "Показатель",
-    "Исходные данные",
-    "CTR +1%",
-    "CTR +2%",
-    "CTR +3%",
-  ];
   headerTitles.forEach((title) => {
     const headerCell = headerRow.insertCell();
     headerCell.textContent = title;
-    headerCell.style.fontWeight = "bold"; // Делаем заголовки жирными
-
-    // Добавляем стили для центрирования текста в заголовках
+    headerCell.style.fontWeight = "bold";
     headerCell.style.textAlign = "center";
   });
 
@@ -305,12 +302,12 @@ function displayResults(results) {
       const row = table.insertRow();
       const metricCell = row.insertCell();
       metricCell.textContent = metric;
-    
+
       // Добавляем данные для каждого CTR, начиная с "Исходные данные"
-      headerTitles.slice(1).forEach((ctrKey) => {
+      headerTitles.slice(1).forEach((ctrKey) => { // Используем динамически созданные headerTitles
         const valueCell = row.insertCell();
-        let value = results[ctrKey][metric];
-    
+        let value = results[ctrKey][metric]; // Теперь ключи должны совпадать
+
         if(ctrKey === "Исходные данные") {
             if (
                 metric === "Изменение прибыли в день, руб." ||
@@ -339,10 +336,11 @@ function displayResults(results) {
         valueCell.style.textAlign = "center";
       });
     });
-  
-  
 
-  // Добавляем выводы после таблицы
+
+  // ... (остальная часть функции displayResults остается без изменений) ...
+
+    // Добавляем выводы после таблицы
   const conclusionContainer = document.getElementById("conclusion");
   conclusionContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых выводов
 
