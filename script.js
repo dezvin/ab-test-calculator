@@ -209,54 +209,48 @@ function calculateResultForCTR(
  * @returns {object} - Объект с результатами расчётов.
  */
 function calculateResults(data) {
-  try {
-    const impressions = calculateImpressions(data.dailyBudget, data.cpm);
-    const totalDesignCost = data.designCostPerSlide * data.numDesignOptions;
-    const testAdCost =
-      data.numDesignOptions * data.impressionsPerTest * (data.cpm / 1000);
-    const testCosts = totalDesignCost + testAdCost;
-    const trafficCosts = testCosts - totalDesignCost;
+  const impressions = calculateImpressions(data.dailyBudget, data.cpm);
+  const totalDesignCost = data.designCostPerSlide * data.numDesignOptions;
+  const testAdCost =
+    data.numDesignOptions * data.impressionsPerTest * (data.cpm / 1000);
+  const testCosts = totalDesignCost + testAdCost;
+  const trafficCosts = testCosts - totalDesignCost;
 
-    const ctrValues = [
-      data.currentCtr,
-      data.currentCtr + 1,
-      data.currentCtr + 2,
-      data.currentCtr + 3,
-    ];
+  const ctrValues = [
+    data.currentCtr,
+    data.currentCtr + 1,
+    data.currentCtr + 2,
+    data.currentCtr + 3,
+  ];
 
-    const results = {};
-    ctrValues.forEach((ctr, index) => {
-      const resultKey =
-        index === 0 ? "Исходные данные" : `CTR +${ctr - data.currentCtr}%`;
-      results[resultKey] = calculateResultForCTR(
-        data,
-        ctr,
-        impressions,
-        testCosts,
-        index === 0
-      );
-      // Добавляем затраты на дизайн и трафик в каждый результат
-      results[resultKey]["Затраты на тесты"] = testCosts;
-      results[resultKey]["Затраты на дизайн"] = totalDesignCost;
-      results[resultKey]["Затраты на трафик"] = trafficCosts;
-    });
+  const results = {};
+  ctrValues.forEach((ctr, index) => {
+    const resultKey =
+      index === 0 ? "Исходные данные" : `CTR +${ctr - data.currentCtr}%`;
+    results[resultKey] = calculateResultForCTR(
+      data,
+      ctr,
+      impressions,
+      testCosts,
+      index === 0
+    );
+    // Добавляем затраты на дизайн и трафик в каждый результат
+    results[resultKey]["Затраты на тесты"] = testCosts;
+    results[resultKey]["Затраты на дизайн"] = totalDesignCost;
+    results[resultKey]["Затраты на трафик"] = trafficCosts;
+  });
 
-    return results;
-  } catch (error) {
-    console.error("Ошибка в calculateResults:", error);
-    return {}; // Возвращаем пустой объект в случае ошибки, чтобы избежать "undefined" в displayResults
-  }
+  return results;
 }
 
 /**
  * Выводит результаты расчётов на страницу.
  *
  * @param {object} results - Объект с результатами расчётов.
- * @param {object} data - Объект с исходными данными (нужен для currentCtr).
  */
-function displayResults(results, data) { // Добавим data в параметры
+function displayResults(results) {
   const resultsContainer = document.getElementById("results");
-  resultsContainer.innerHTML = "";
+  resultsContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых результатов
 
   // Создаем заголовок таблицы
   const tableHeader = document.createElement("h3");
@@ -267,18 +261,21 @@ function displayResults(results, data) { // Добавим data в параме�
   const table = document.createElement("table");
   resultsContainer.appendChild(table);
 
-  // Динамически формируем headerTitles на основе currentCtr
-  const headerTitles = ["Показатель", "Исходные данные"];
-  for (let i = 1; i <= 3; i++) {
-    headerTitles.push(`CTR +${i}%`); // Формируем ключи как в calculateResults, но явно строки
-  }
-
   // Создаем строку заголовков таблицы
   const headerRow = table.insertRow();
+  const headerTitles = [
+    "Показатель",
+    "Исходные данные",
+    "CTR +1%",
+    "CTR +2%",
+    "CTR +3%",
+  ];
   headerTitles.forEach((title) => {
     const headerCell = headerRow.insertCell();
     headerCell.textContent = title;
-    headerCell.style.fontWeight = "bold";
+    headerCell.style.fontWeight = "bold"; // Делаем заголовки жирными
+
+    // Добавляем стили для центрирования текста в заголовках
     headerCell.style.textAlign = "center";
   });
 
@@ -302,12 +299,12 @@ function displayResults(results, data) { // Добавим data в параме�
       const row = table.insertRow();
       const metricCell = row.insertCell();
       metricCell.textContent = metric;
-
+    
       // Добавляем данные для каждого CTR, начиная с "Исходные данные"
-      headerTitles.slice(1).forEach((ctrKey) => { // Используем динамически созданные headerTitles
+      headerTitles.slice(1).forEach((ctrKey) => {
         const valueCell = row.insertCell();
-        let value = results[ctrKey][metric]; // Теперь ключи должны совпадать
-
+        let value = results[ctrKey][metric];
+    
         if(ctrKey === "Исходные данные") {
             if (
                 metric === "Изменение прибыли в день, руб." ||
@@ -336,11 +333,10 @@ function displayResults(results, data) { // Добавим data в параме�
         valueCell.style.textAlign = "center";
       });
     });
+  
+  
 
-
-  // ... (остальная часть функции displayResults остается без изменений) ...
-
-    // Добавляем выводы после таблицы
+  // Добавляем выводы после таблицы
   const conclusionContainer = document.getElementById("conclusion");
   conclusionContainer.innerHTML = ""; // Очищаем контейнер перед выводом новых выводов
 
@@ -492,7 +488,6 @@ function handleSubmit(event) {
     };
 
     const results = calculateResults(data);
-    console.log("Результат calculateResults:", results);
     displayResults(results);
   } catch (error) {
     alert(error.message);
